@@ -1,38 +1,40 @@
 import React, {ChangeEvent,useState,useEffect }from "react";
 import functionPlot from "function-plot";
+import { addStyles, EditableMathField } from "react-mathquill"
+import {
+    atan2, chain, derivative, e, evaluate, log, pi, pow, round, sqrt
+} from 'mathjs'
 var Latex = require('react-latex');
-
+addStyles()
 
 
 const Bisection_method:React.FC =()=>{
-    const [test,settest] = useState({eqution:' ',left: ' ',right:' '})
-    const [someState, setSomeState] = useState(<Latex>What is $x^2+b^3$</Latex>);
+    const [test,settest] = useState({left: 0,right: 0})
+    const [latex, setLatex] = useState(' ')
 
-
-
-
+    const handleSubmit =(e:any)=> {
+        alert('ขอบเขตซ้าย: '+test.left+' '+'ขอบเขตขวา: '+test.right);
+        e.preventDefault();
+    }
 
     const inputsHandler = (e:any) => {
         settest({ ...test, [e.target.name]: e.target.value });
     };
     const submitButton = () =>{
-        const kartex = () => {
-            <Latex>What is $x^2+b^3$</Latex>
-        }
         functionPlot({
-            title: 'x^2',
+            title: latex,
             target: '#test',
             width: 580,
             height: 400,
             data: [{
-                fn: 'x^2',
+                fn: latex,
             }],
             annotations: [{
-                x: -1,
-                text: 'x = -1'
+                x: test.left,
+                text: 'x = '+test.left.toString()
             }, {
-                x: 1,
-                text: 'x = 1'
+                x: test.right,
+                text: 'x = '+test.right.toString()
             }]
         })
 
@@ -67,15 +69,22 @@ const Bisection_method:React.FC =()=>{
     Bisection()
     return(
         <div>
-            <Latex>What is $x^2+b^3$</Latex>
-            <input onChange={inputsHandler} name="eqution" value={test.eqution}/>
-            <button onClick={submitButton}>6666</button>
-            <h1>{Bisection()}</h1>
-            <p>{test.eqution}</p>
-            <div id="test"></div>
-
-
-
+            <form onSubmit={handleSubmit}>
+                <label>ใส่สมการ</label>
+                <EditableMathField
+                    style={{ display: "flex", color: "red", flexDirection: "column",width: "100px"}}
+                    latex={latex}
+                    onChange={(mathField) => {
+                        setLatex(mathField.latex())
+                    }}
+                />
+                <input onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"}/>
+                <input onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"}/>
+                <button onClick={submitButton}>ตกลง</button>
+                <h1>{Bisection()}</h1>
+                <p>{latex}</p>
+                <div id="test"></div>
+            </form>
         </div>
     );
 }
