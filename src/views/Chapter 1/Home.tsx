@@ -1,6 +1,5 @@
 import React from "react";
 import {Link, Route, Routes,Router} from "react-router-dom";
-import Bisection_method from "./Bisection_method";
 
 const Home:React.FC =()=>{
     return(
@@ -10,6 +9,7 @@ const Home:React.FC =()=>{
                 <ul>
                     <li>
                         <Link to="BisectionMethod">BisectionMethod</Link>{" "}
+                        <Link to="FalsePosition">FalsePosition</Link>{" "}
                     </li>
                 </ul>
             </nav>

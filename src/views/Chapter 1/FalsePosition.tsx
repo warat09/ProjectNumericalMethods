@@ -9,7 +9,7 @@ var Latex = require('react-latex');
 addStyles()
 
 
-const Bisection_method:React.FC =()=>{
+const FalsePosition:React.FC =()=>{
     const [test,settest] = useState({left: 0,right: 0})
     const [res,setres] = useState(' ')
     const [latex, setLatex] = useState(' ')
@@ -19,15 +19,15 @@ const Bisection_method:React.FC =()=>{
         let pow:string = latex.replace(/\^/g, '**')
         let t: string = pow.replace(/(\d+)(x)/g, '$1*x')
         axios.get("http://localhost:6060/test",
-                {params:
-                        {
-                            eq:t,
-                            valleft:test.left,
-                            valright:test.right,
-                            method:"bisection"
-                        }
-                }
-                )
+            {params:
+                    {
+                        eq:t,
+                        valleft:test.left,
+                        valright:test.right,
+                        method:"falseposition"
+                    }
+            }
+        )
             .then(response => {
                 setres(response.data)
                 // do something about response
@@ -60,7 +60,7 @@ const Bisection_method:React.FC =()=>{
 
     return(
         <div>
-            <h1>Bisection</h1>
+            <h1>False Position</h1>
             <form onSubmit={handleSubmit}>
                 <label>ใส่สมการ</label>
                 <EditableMathField
@@ -80,4 +80,4 @@ const Bisection_method:React.FC =()=>{
         </div>
     );
 }
-export default Bisection_method
+export default FalsePosition
