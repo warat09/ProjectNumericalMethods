@@ -8,33 +8,48 @@ import axios from "axios";
 var Latex = require('react-latex');
 addStyles()
 
+interface setwq{
+    eq : string
+}
 
-const Bisection_method:React.FC =()=>{
-    const [test,settest] = useState({left: 0,right: 0})
+
+const Bisection_method:React.FC<setwq> =({eq})=>{
+    eq = "asdasd";
+    const [test,settest] = useState({left: '',right: ''})
     const [res,setres] = useState(' ')
     const [latex, setLatex] = useState(' ')
 
     const handleSubmit = async (e:any)=> {
         alert('ขอบเขตซ้าย: '+test.left+' '+'ขอบเขตขวา: '+test.right);
-        let pow:string = latex.replace(/\^/g, '**')
-        let t: string = pow.replace(/(\d+)(x)/g, '$1*x')
-        axios.get("http://localhost:6060/test",
-                {params:
-                        {
-                            eq:t,
-                            valleft:test.left,
-                            valright:test.right,
-                            method:"bisection"
-                        }
+        let pow:string = latex.replace(/\^/g, '**').replace(/(\d+)(x)/g, '$1*x')
+        const fx = (x:number) =>{
+            let a : number = eval(pow)
+            return a
+        }
+        const Bisection = () => {
+            let Xl : number =  parseFloat(test.left)
+            let Xr : number = parseFloat(test.right)
+            console.log(Xl+Xr)
+            let x_old : number = 0
+            let Xm : number = (Xl+Xr)/2
+            console.log("ssss="+Xl+Xr)
+
+            while (Math.abs(Xm-x_old)/Xm > 0.0000001){
+                if(fx(Xm)*fx(Xr)>0){
+                    x_old = Xr
+                    Xr = Xm
+                    console.log(Xr)
                 }
-                )
-            .then(response => {
-                setres(response.data)
-                // do something about response
-            })
-            .catch(err => {
-                console.error(err)
-            })
+                else{
+                    x_old = Xl
+                    Xl= Xm
+                    console.log(Xl)
+                }
+                Xm = (Xl+Xr)/2
+            }
+            return Xm
+        }
+        setres(Bisection().toString())
 
         functionPlot({
             target: '#test',
@@ -44,11 +59,11 @@ const Bisection_method:React.FC =()=>{
                 fn: latex,
             }],
             annotations: [{
-                x: test.left,
-                text: 'x = '+test.left as string
+                x: parseFloat(test.left),
+                text: 'x = '+test.left
             }, {
-                x: test.right,
-                text: 'x = '+test.right.toString()
+                x: parseFloat(test.right),
+                text: 'x = '+test.right
             }]
         })
         e.preventDefault();
@@ -75,6 +90,7 @@ const Bisection_method:React.FC =()=>{
                 <input type="submit" name="submit"/>
                 <p>{latex}</p>
                 <h2>{res}</h2>
+                <h3>{eq}</h3>
                 <div id="test"></div>
             </form>
         </div>
