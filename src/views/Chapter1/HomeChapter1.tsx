@@ -10,6 +10,8 @@ const Home:React.FC =()=>{
                     <li>
                         <Link to="BisectionMethod">BisectionMethod</Link>{" "}
                         <Link to="FalsePosition">FalsePosition</Link>{" "}
+                        <Link to="OnePointInteration">OnePointInteration</Link>{" "}
+                        <Link to="NewtonRaphson">NewtonRaphson</Link>{" "}
                     </li>
                 </ul>
             </nav>
