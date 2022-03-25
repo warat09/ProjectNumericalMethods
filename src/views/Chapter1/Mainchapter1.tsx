@@ -1,20 +1,18 @@
 import React, {ChangeEvent,useState,useEffect,useRef  }from "react";
+import {Link, Route, Routes,Router} from "react-router-dom";
+
 import functionPlot from "function-plot";
 import { addStyles, EditableMathField,StaticMathField} from "react-mathquill"
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,AreaChart,Area } from 'recharts';
 import axios from "axios";
 import { parse,serialize,LatexSyntax,ComputeEngine  } from '@cortex-js/compute-engine';
 import {MathfieldElement} from "mathlive";
 import { MathfieldComponent } from "react-mathlive";
 import * as mathjs from "mathjs";
 import { parseTex, evaluateTex } from 'tex-math-parser' // ES6 module
-import CalProblem from "./CalProblem";
-
-
-
-
-
+import { string } from "mathjs";
+const Desmos = require("desmos");
 var Latex = require('react-latex');
 
 
@@ -24,9 +22,14 @@ addStyles()
     name:number
     Xm:number
   }
+  interface seterror{
+      name:number
+      Error:number
+  }
   interface test{
       name:string
   }
+  
 
 const Mainchapter1:React.FC<test> =(props)=>{
     const [q,setq] = useState('')
@@ -34,9 +37,15 @@ const Mainchapter1:React.FC<test> =(props)=>{
     const [res,setres] = useState(' ')
     const [latex, setLatex] = useState(q)
     const [cars, setCars] = useState<setgraph[]>([])
+    const [error, setError] = useState<seterror[]>([])
+
     const datas :setgraph[]= []
+    const dataserror :seterror[]= []
     const [vars, setVars] = useState<{ name: string; value: number }[]>([]);
     const [atex, setatex] = React.useState("f(x)=\\log _10 x");
+
+
+
 
 
     // const expr = parse('\\frac{\\sqrt{5}}{3}')
@@ -52,7 +61,6 @@ const Mainchapter1:React.FC<test> =(props)=>{
 // console.log(expr);
 // const atex = latexSyntax.serialize(expr);
 // console.log(atex);
-
 
 const ce = new ComputeEngine();
 // console.log("latex is",latex)
@@ -117,12 +125,19 @@ const ce = new ComputeEngine();
                   name: datas.length,
                   Xm: Xm
                 }
+
+                const newerror = {
+                    name: dataserror.length,
+                    Error: error
+                  }
                 
                 datas.push(newCar)
+                dataserror.push(newerror)
 
             }
             console.log(datas)
             setCars(datas)
+            setError(dataserror)
             return Xm
         }
         
@@ -130,7 +145,8 @@ const ce = new ComputeEngine();
             let Xl:number = parseFloat(left),Xr:number = parseFloat(right),Fxl:number = fx(Xl),Fxr:number = fx(Xr)
             let X1:number = ((Xl * Fxr) - (Xr * Fxl))/(Fxr-Fxl)
             let x_old:number = 0;
-            while (Math.abs((X1-x_old)/X1) > 0.000001){
+            let error:number = Math.abs((X1-x_old)/X1)
+            while (error > 0.000001 && error != Infinity){
                 console.log("fxr",Fxr);
                 if(fx(X1)*fx(Xr) > 0){
                     x_old = Xr
@@ -145,13 +161,23 @@ const ce = new ComputeEngine();
                     console.log("Xl",Xl)
                 }
                 X1 = ((Xl * fx(Xr)) - (Xr * fx(Xl)))/(fx(Xr)-fx(Xl))
+                error = Math.abs((X1-x_old)/X1)
+
                 const newCar = {
                     name: datas.length,
                     Xm: X1
                   }
+                  const newerror = {
+                    name: dataserror.length,
+                    Error: error
+                  }
+
                   datas.push(newCar)
+                  dataserror.push(newerror)
+
             }
             setCars(datas)
+            setError(dataserror)
             return X1
         }
         const Onepoint = () => {
@@ -170,10 +196,17 @@ const ce = new ComputeEngine();
                     name: datas.length,
                     Xm: X2
                   }
-                  
+                  const newerror = {
+                    name: dataserror.length,
+                    Error: error
+                  }
+
+                  dataserror.push(newerror)
                   datas.push(newCar)
             }
             setCars(datas)
+            setError(dataserror)
+
             return X2
         }
         const fxnewton = (x:number) => {
@@ -195,11 +228,18 @@ const ce = new ComputeEngine();
                     name: datas.length,
                     Xm: xnew
                   }
+                  const newerror = {
+                    name: dataserror.length,
+                    Error: error
+                  }
                   datas.push(newCar)
+                  dataserror.push(newerror)
             }
             setCars(datas)
+            setError(dataserror)
             return xnew
         }
+        
 
         switch(props.name){
             case "Bisection":
@@ -231,19 +271,28 @@ const ce = new ComputeEngine();
         settest({ ...test, [e.target.name]: e.target.value });
     };
     useEffect(()=>{
+
+
         axios.get("http://localhost:6060/posts")
         .then(response => {
+            var elt = document.getElementById('calculator');
+            var calculator = Desmos.GraphingCalculator(elt);
+
             
             switch(props.name){
                 case "Bisection":
                  setLatex(response.data.keepquestion.Bisection[0].eq)
                  settest({left:response.data.keepquestion.Bisection[0].left,right:response.data.keepquestion.Bisection[0].right,begin:'0'})
                  problem(response.data.keepquestion.Bisection[0].left,response.data.keepquestion.Bisection[0].right,'0',response.data.keepquestion.Bisection[0].eq)
+                 const desmoslatex:string = "y="+response.data.keepquestion.Bisection[0].eq;
+                 calculator.setExpression({ id: 'graph1', latex: desmoslatex });
                  break
                  case "FalsePosition":
                  setLatex(response.data.keepquestion.FalsePosition[0].eq)
                  settest({left:response.data.keepquestion.FalsePosition[0].left,right:response.data.keepquestion.FalsePosition[0].right,begin:'0'})
                  problem(response.data.keepquestion.FalsePosition[0].left,response.data.keepquestion.FalsePosition[0].right,'0',response.data.keepquestion.FalsePosition[0].eq)
+                 const desmoslatexFalse:string = "y="+response.data.keepquestion.FalsePosition[0].eq;
+                 calculator.setExpression({ id: 'graph1', latex: desmoslatexFalse });
                  break
                  case "OnePointInteration":
                  setLatex(response.data.keepquestion.OnePointInteration[0].eq)
@@ -263,7 +312,70 @@ const ce = new ComputeEngine();
             console.error(err)
         })
     },[])
+    const data = [
+        {
+          name: 'Page A',
+          uv: 4000,
+          pv: 2400,
+          amt: 2400,
+        },
+        {
+          name: 'Page B',
+          uv: 3000,
+          pv: 1398,
+          amt: 2210,
+        },
+        {
+          name: 'Page C',
+          uv: -1000,
+          pv: 9800,
+          amt: 2290,
+        },
+        {
+          name: 'Page D',
+          uv: 500,
+          pv: 3908,
+          amt: 2000,
+        },
+        {
+          name: 'Page E',
+          uv: -2000,
+          pv: 4800,
+          amt: 2181,
+        },
+        {
+          name: 'Page F',
+          uv: -250,
+          pv: 3800,
+          amt: 2500,
+        },
+        {
+          name: 'Page G',
+          uv: 3490,
+          pv: 4300,
+          amt: 2100,
+        },
+      ];
+
+      
+    const gradientOffset = () => {
+        const dataMax = Math.max(...cars.map((i) => i.Xm));
+        const dataMin = Math.min(...cars.map((i) => i.Xm));
+      
+        if (dataMax <= 0) {
+          return 0;
+        }
+        if (dataMin >= 0) {
+          return 1;
+        }
+      
+        return dataMax / (dataMax - dataMin);
+      };
     
+    const off = gradientOffset();
+
+
+
 
     return(
         <div>
@@ -307,31 +419,60 @@ const ce = new ComputeEngine();
                 <p>{latex.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/{/g,'(').replace(/}/g,')')}</p>
                 {/* .replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/{\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}}/,'($1/$2)') */}
                 <h2>{res}</h2>
-                <div id="test"></div>
-                <LineChart
-      width={1000}
-      height={600}
-      data={cars}
-      margin={{
-        top: 100,
-        right: 30,
-        left: 20,
-        bottom: 5
-      }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Line
-        type="monotone"
-        dataKey="Xm"
-        stroke="#8884d8"
-        activeDot={{ r: 8 }}
-      />
-      {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
-    </LineChart>
+                <h2 style={{marginLeft: "450px"}}>กราฟจากสมการ</h2>
+                <div id="calculator" style={{width:"1000px",height:"600px"}}></div>
+                
+                <h2 style={{marginLeft: "450px"}}>ค่าXm</h2>
+                <AreaChart
+                width={1000}
+                height={600}
+                data={cars}
+                margin={{
+                    top: 10,
+                    right: 30,
+                    left: 0,
+                    bottom: 0
+                }}
+                >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <defs>
+                    <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset={off} stopColor="green" stopOpacity={1} />
+                    <stop offset={off} stopColor="red" stopOpacity={1} />
+                    </linearGradient>
+                </defs>
+                <Area
+                    type="monotone"
+                    dataKey="Xm"
+                    stroke="#000"
+                    fill="url(#splitColor)"
+                    
+                />
+                </AreaChart>
+
+                <h2 style={{marginLeft: "450px"}}>ค่าError</h2>
+
+                <AreaChart
+          width={1000}
+          height={600}
+          data={error}
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Area type="monotone" dataKey="Error" stroke="#000" fill="#FF2400" />
+        </AreaChart>
+
     {/* <div>* static mathquill</div>
       <div>
         <StaticMathField>{latex}</StaticMathField>

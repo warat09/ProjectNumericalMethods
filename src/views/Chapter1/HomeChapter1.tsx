@@ -1,5 +1,6 @@
 import React from "react";
 import {Link, Route, Routes,Router} from "react-router-dom";
+import Chapter1 from "./Mainchapter1"
 
 const Home:React.FC =()=>{
     return(
