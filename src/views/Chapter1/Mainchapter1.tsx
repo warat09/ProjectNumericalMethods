@@ -44,45 +44,6 @@ const Mainchapter1:React.FC<test> =(props)=>{
     const [vars, setVars] = useState<{ name: string; value: number }[]>([]);
     const [atex, setatex] = React.useState("f(x)=\\log _10 x");
 
-
-
-
-
-    // const expr = parse('\\frac{\\sqrt{5}}{3}')
-    // const atex = serialize(expr);
-    // console.log(atex)
-    // console.log(evaluate(atex))
-    // console.log(serialize(1/3, {
-    //     precision: 3,
-    //     decimalMarker: ","
-    // }));
-//     const latexSyntax = new LatexSyntax();
-// const expr = latexSyntax.parse('\\frac{\\pi}{2}');
-// console.log(expr);
-// const atex = latexSyntax.serialize(expr);
-// console.log(atex);
-
-const ce = new ComputeEngine();
-// console.log("latex is",latex)
-// let c:string = "8";
-// let d:any = parseFloat(c)
-// let e:string = '2^{\\frac{1}{2}}'
-// console.log(d);
-// let b :string = e.replace(/(\d+)(x)/g, '$1*x').replace(/(\d+)(e)/g, '$1*e').replace(/x/g,d)
-// console.log("latex convert is",b)
-// console.log("cal is",ce.N(parse(b)))
-
-
-
-
-
-// const texStr = String.raw`2^{\frac{x}{4}}`;
-// const answer = evaluateTex(texStr, {x: 2, y: 1});
-// console.log(answer.evaluated); // 1
-
-
-
-    
     const problem = (left:string,right:string,begin:string,eq:string) =>{
         const fx = (x:number) =>{
             let X:number = parseFloat(x.toFixed(9))
@@ -259,7 +220,6 @@ const ce = new ComputeEngine();
     }
     const handleSubmit = async (e:any)=> {
         alert('ขอบเขตซ้าย: '+test.left+' '+'ขอบเขตขวา: '+test.right);
-        console.log("handleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         // let a = derivative('x^2+2x', 'x').toString()
         console.log("latex submit",latex)
         problem(test.left,test.right,test.begin,latex)
@@ -271,9 +231,12 @@ const ce = new ComputeEngine();
         settest({ ...test, [e.target.name]: e.target.value });
     };
     useEffect(()=>{
+      let tokenStr = 'tle1234';
 
 
-        axios.get("http://localhost:6060/posts")
+        axios.get("http://localhost:6060/posts",{ headers: {
+          "x-access-token": `${tokenStr}` 
+        } })
         .then(response => {
             var elt = document.getElementById('calculator');
             var calculator = Desmos.GraphingCalculator(elt);
