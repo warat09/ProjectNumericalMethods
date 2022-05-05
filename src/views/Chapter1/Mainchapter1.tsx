@@ -1,10 +1,9 @@
 import React, {ChangeEvent,useState,useEffect,useRef  }from "react";
-import {Link, Route, Routes,Router} from "react-router-dom";
 
 import functionPlot from "function-plot";
 import { addStyles, EditableMathField,StaticMathField} from "react-mathquill"
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,AreaChart,Area } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,AreaChart,Area, Brush,ReferenceLine } from 'recharts';
 import axios from "axios";
 import { parse,serialize,LatexSyntax,ComputeEngine  } from '@cortex-js/compute-engine';
 import {MathfieldElement} from "mathlive";
@@ -12,8 +11,10 @@ import { MathfieldComponent } from "react-mathlive";
 import * as mathjs from "mathjs";
 import { parseTex, evaluateTex } from 'tex-math-parser' // ES6 module
 import { string } from "mathjs";
+import { NavLink } from "react-router-dom";
 const Desmos = require("desmos");
 var Latex = require('react-latex');
+
 
 
 addStyles()
@@ -26,6 +27,11 @@ addStyles()
       name:number
       Error:number
   }
+  interface setplotgraph{
+    name:String
+    X:number
+    Y:number
+}
   interface test{
       name:string
   }
@@ -38,24 +44,43 @@ const Mainchapter1:React.FC<test> =(props)=>{
     const [latex, setLatex] = useState(q)
     const [cars, setCars] = useState<setgraph[]>([])
     const [error, setError] = useState<seterror[]>([])
+    const [plotgraph, setplotgraph] = useState<setplotgraph[]>([])
+
 
     const datas :setgraph[]= []
     const dataserror :seterror[]= []
+    const datasetplotgraph :setplotgraph[]= []
+
     const [vars, setVars] = useState<{ name: string; value: number }[]>([]);
     const [atex, setatex] = React.useState("f(x)=\\log _10 x");
 
     const problem = (left:string,right:string,begin:string,eq:string) =>{
         const fx = (x:number) =>{
-            let X:number = parseFloat(x.toFixed(9))
-            console.log('X',X)
-            let pow:string = eq.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/x/g,X.toString()).replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/{/g,'(').replace(/}/g,')')
-            console.log("samagan ku is ",pow)
-            // console.log('pow is',pow)
+            let X:number = x
+            // console.log('X',X)
+            let pow:string = eq.replace(/x/g,X.toString()).replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')')
+
+            // let pow:string = eq.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*$2').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*$2').replace(/x/g,X.toString()).replace(/(e)([-+]?[0-9]*\.?[0-9]+)/g, '$1*$2').replace(/([-][0-9]*\.?[0-9]+)\^([-+]?[0-9]*\.?[0-9]+)/,'($1)^$2').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')')
+            // console.log("samagan ku is ",pow)
+            console.log('pow is',pow)
             // let a :any = ce.N(parse(pow.replace(/x/g,X.toString())))
             // console.log('ans is',a)
             let eee : any = mathjs.parse(pow)
             let a : any = eee.evaluate()
-            return a
+            // mathjs.evaluate(eq,{x: X})
+            return mathjs.evaluate(eq,{x: X})
+        }
+        const setgraph =() =>{
+          console.log("fx11"+fx(-11))
+          for(let i = -500;i < 500;i++){
+            const newgraph = {
+              name:"ploat",
+              X:i,
+              Y:fx(i)
+            }
+            datasetplotgraph.push(newgraph)
+          }
+          setplotgraph(datasetplotgraph)
         }
         const Bisection = () => {
             let Xl : number =  parseFloat(left)
@@ -70,15 +95,15 @@ const Mainchapter1:React.FC<test> =(props)=>{
                 if(fx(Xm)*fx(Xr)>0){
                     x_old = Xr
                     Xr = Xm
-                    console.log(Xr)
+                    // console.log(Xr)
                 }
                 else{
                     x_old = Xl
                     Xl= Xm
-                    console.log(Xl)
+                    // console.log(Xl)
                 }
                 Xm = (Xl+Xr)/2
-                console.log("Xm = "+Xm)
+                // console.log("Xm = "+Xm)
                 error = Math.abs((Xm-x_old)/Xm)
                 
 
@@ -92,11 +117,13 @@ const Mainchapter1:React.FC<test> =(props)=>{
                     Error: error
                   }
                 
+                  
+                
                 datas.push(newCar)
                 dataserror.push(newerror)
 
             }
-            console.log(datas)
+            // console.log(datas)
             setCars(datas)
             setError(dataserror)
             return Xm
@@ -171,7 +198,7 @@ const Mainchapter1:React.FC<test> =(props)=>{
             return X2
         }
         const fxnewton = (x:number) => {
-            let div:number = mathjs.derivative(eq.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/{/g,'(').replace(/}/g,')'),'x').evaluate({x:x})
+            let div:number = mathjs.derivative(eq.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*$2').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*$2').replace(/(e)([-+]?[0-9]*\.?[0-9]+)/g, '$1*$2').replace(/([-][0-9]*\.?[0-9]+)\^([-+]?[0-9]*\.?[0-9]+)/,'($1)^$2').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')'),'x').evaluate({x:x})
             let eqnewton:number = -fx(x)/div
             return eqnewton
         }
@@ -205,15 +232,19 @@ const Mainchapter1:React.FC<test> =(props)=>{
         switch(props.name){
             case "Bisection":
                 setres(Bisection().toString())
+                setgraph()
                 break
             case "FalsePosition":
                 setres(FalsePosition().toString())
+                setgraph()
                 break
             case "OnePointInteration":
                 setres(Onepoint().toString())
+                setgraph()
                 break
             case "NewtonRaphson":
                 setres(NewtonRaphson().toString())
+                setgraph()
                 break
         }
 
@@ -234,8 +265,8 @@ const Mainchapter1:React.FC<test> =(props)=>{
       let tokenStr = 'tle1234';
 
 
-        axios.get("http://localhost:6060/posts",{ headers: {
-          "x-access-token": `${tokenStr}` 
+        axios.get("http://localhost:6060/Rootofeqution",{ headers: {
+          "access-token": `${tokenStr}` 
         } })
         .then(response => {
             var elt = document.getElementById('calculator');
@@ -275,51 +306,6 @@ const Mainchapter1:React.FC<test> =(props)=>{
             console.error(err)
         })
     },[])
-    const data = [
-        {
-          name: 'Page A',
-          uv: 4000,
-          pv: 2400,
-          amt: 2400,
-        },
-        {
-          name: 'Page B',
-          uv: 3000,
-          pv: 1398,
-          amt: 2210,
-        },
-        {
-          name: 'Page C',
-          uv: -1000,
-          pv: 9800,
-          amt: 2290,
-        },
-        {
-          name: 'Page D',
-          uv: 500,
-          pv: 3908,
-          amt: 2000,
-        },
-        {
-          name: 'Page E',
-          uv: -2000,
-          pv: 4800,
-          amt: 2181,
-        },
-        {
-          name: 'Page F',
-          uv: -250,
-          pv: 3800,
-          amt: 2500,
-        },
-        {
-          name: 'Page G',
-          uv: 3490,
-          pv: 4300,
-          amt: 2100,
-        },
-      ];
-
       
     const gradientOffset = () => {
         const dataMax = Math.max(...cars.map((i) => i.Xm));
@@ -342,7 +328,21 @@ const Mainchapter1:React.FC<test> =(props)=>{
 
     return(
         <div>
-            <h1>{props.name}</h1>
+                      <nav>
+                <ul>
+                    <li>
+                        <NavLink to="BisectionMethod">BisectionMethod</NavLink>{" "}
+                        <NavLink to="FalsePosition">FalsePosition</NavLink>{" "}
+                        <NavLink to="OnePointInteration">OnePointInteration</NavLink>{" "}
+                        <NavLink to="NewtonRaphson">NewtonRaphson</NavLink>{" "}
+                    </li>
+                </ul>
+            </nav>   
+          <header className="bg-white shadow">
+            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+              <h1 className="text-3xl font-bold text-gray-900">{props.name}</h1>
+            </div>
+          </header>
             <form onSubmit={handleSubmit}>
                 <label>ใส่สมการ</label>
                 <EditableMathField
@@ -379,11 +379,27 @@ const Mainchapter1:React.FC<test> =(props)=>{
                     </div>
                 }
                 <input type="submit" name="submit"/>
-                <p>{latex.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/{/g,'(').replace(/}/g,')')}</p>
+                <p>{latex}</p>
+                {/* <p>{latex.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*$2').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*$2').replace(/x/g,'-10').replace(/(e)([-+]?[0-9]*\.?[0-9]+)/g, '$1*$2').replace(/([-][0-9]*\.?[0-9]+)\^([-+]?[0-9]*\.?[0-9]+)/,'($1)^$2').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan')}</p> */}
                 {/* .replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/{\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}}/,'($1/$2)') */}
+                {/* <p>{latex.replace(/x/g,'-3').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\frac3)(2)/).replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')')}</p> */}
+                <p>{latex.replace(/[^\\]*\\frac{(.+)}{(.+)}$/g,'$1/$2')}</p>
+
                 <h2>{res}</h2>
                 <h2 style={{marginLeft: "450px"}}>กราฟจากสมการ</h2>
-                <div id="calculator" style={{width:"1000px",height:"600px"}}></div>
+
+                <LineChart width={1000} height={600} data={plotgraph} 
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <XAxis dataKey="X" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <ReferenceLine x={0} stroke="red" />
+                <ReferenceLine y={0} stroke="red" />
+
+                <Line type="monotone" dataKey="Y" stroke="#000" dot={false}/>
+                <Brush/>
+              </LineChart>
                 
                 <h2 style={{marginLeft: "450px"}}>ค่าXm</h2>
                 <AreaChart
@@ -414,6 +430,7 @@ const Mainchapter1:React.FC<test> =(props)=>{
                     fill="url(#splitColor)"
                     
                 />
+                <Brush/>
                 </AreaChart>
 
                 <h2 style={{marginLeft: "450px"}}>ค่าError</h2>
@@ -434,6 +451,7 @@ const Mainchapter1:React.FC<test> =(props)=>{
           <YAxis />
           <Tooltip />
           <Area type="monotone" dataKey="Error" stroke="#000" fill="#FF2400" />
+          <Brush/>
         </AreaChart>
 
     {/* <div>* static mathquill</div>
