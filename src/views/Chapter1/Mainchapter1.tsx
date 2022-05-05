@@ -10,9 +10,7 @@ import {MathfieldElement} from "mathlive";
 import { MathfieldComponent } from "react-mathlive";
 import * as mathjs from "mathjs";
 import { parseTex, evaluateTex } from 'tex-math-parser' // ES6 module
-import { string } from "mathjs";
 import { NavLink } from "react-router-dom";
-var Latex = require('react-latex');
 
 
 
