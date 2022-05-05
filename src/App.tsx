@@ -22,8 +22,7 @@ import Nav from './views/Dashboard/Navbar';
 const App: React.FC = () => {
   return (
     <Router>
-      <div>
-        <Nav />
+      <Nav/>
         <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="Document" element={<Document/>}/>
@@ -45,7 +44,6 @@ const App: React.FC = () => {
                 <Route path="Numericalmethod/LinearAlgebra/Gauss_Seidal" element={<Mainchapter2 name={"Gauss_Seidal"}/>}/>
                 <Route path="Numericalmethod/LinearAlgebra/Conjugate" element={<Mainchapter2 name={"Conjugate"}/>}/>
         </Routes>
-    </div>
 </Router>
     // <div>
 

@@ -12,7 +12,6 @@ import * as mathjs from "mathjs";
 import { parseTex, evaluateTex } from 'tex-math-parser' // ES6 module
 import { string } from "mathjs";
 import { NavLink } from "react-router-dom";
-const Desmos = require("desmos");
 var Latex = require('react-latex');
 
 
@@ -270,7 +269,6 @@ const Mainchapter1:React.FC<test> =(props)=>{
         } })
         .then(response => {
             var elt = document.getElementById('calculator');
-            var calculator = Desmos.GraphingCalculator(elt);
 
             
             switch(props.name){
@@ -278,15 +276,11 @@ const Mainchapter1:React.FC<test> =(props)=>{
                  setLatex(response.data.keepquestion.Bisection[0].eq)
                  settest({left:response.data.keepquestion.Bisection[0].left,right:response.data.keepquestion.Bisection[0].right,begin:'0'})
                  problem(response.data.keepquestion.Bisection[0].left,response.data.keepquestion.Bisection[0].right,'0',response.data.keepquestion.Bisection[0].eq)
-                 const desmoslatex:string = "y="+response.data.keepquestion.Bisection[0].eq;
-                 calculator.setExpression({ id: 'graph1', latex: desmoslatex });
                  break
                  case "FalsePosition":
                  setLatex(response.data.keepquestion.FalsePosition[0].eq)
                  settest({left:response.data.keepquestion.FalsePosition[0].left,right:response.data.keepquestion.FalsePosition[0].right,begin:'0'})
                  problem(response.data.keepquestion.FalsePosition[0].left,response.data.keepquestion.FalsePosition[0].right,'0',response.data.keepquestion.FalsePosition[0].eq)
-                 const desmoslatexFalse:string = "y="+response.data.keepquestion.FalsePosition[0].eq;
-                 calculator.setExpression({ id: 'graph1', latex: desmoslatexFalse });
                  break
                  case "OnePointInteration":
                  setLatex(response.data.keepquestion.OnePointInteration[0].eq)
