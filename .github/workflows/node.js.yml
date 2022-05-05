@@ -1,0 +1,26 @@
+name: CI
+on: [push]
+jobs:
+    install-and-test:
+      runs-on: ubuntu-latest
+
+      strategy:
+        matrix:
+          node-version: [17.x]
+
+      steps:
+        - uses: actions/checkout@master
+
+        - name: Set up Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@master
+          with:
+            node-version: ${{ matrix.node-version }}
+
+        - name: Install packages
+          run: yarn install --frozen-lockfile
+
+        - name: Test
+          run: yarn test
+
+          env:
+            CI: true
