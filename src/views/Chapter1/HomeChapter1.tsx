@@ -6,6 +6,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import axios from "axios";
 import * as mathjs from "mathjs";
 import { index } from "mathjs";
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+
 
 addStyles()
 
@@ -26,11 +28,14 @@ const Home:React.FC =()=>{
     const [selectMethod,setselect] = useState("Bisection");
     const [q,setq] = useState('')
     const [test,settest] = useState({left: '',right: '',begin:''})
-    const [res,setres] = useState(' ')
+    const [res,setres] = useState('0')
     const [latex, setLatex] = useState(q)
     const [cars, setCars] = useState<setgraph[]>([])
     const [error, setError] = useState<seterror[]>([])
     const [plotgraph, setplotgraph] = useState<setplotgraph[]>([])
+
+    const [dataTable, setdataTable] = useState([{id: 1}]);
+    const [coloumnTable, setcoloumnTable] = React.useState<GridColDef[]>([])
 
 
     const datas :setgraph[]= []
@@ -39,6 +44,10 @@ const Home:React.FC =()=>{
 
     const [selectobg,setselectobg] = useState([])
     const [selecteq,setselecteq] = useState("")
+
+    const columns: GridColDef[] = [
+      { field: 'id', headerName: 'Iteration', width: 100 },
+    ];
 
     const problem = (left:string,right:string,begin:string,eq:string,method:string) =>{
         const fx = (x:number) =>{
@@ -76,6 +85,9 @@ const Home:React.FC =()=>{
             let Xm : number = (Xl+Xr)/2
             console.log("ssss="+Xl+Xr)
             let error : number = Math.abs((Xm-x_old)/Xm)
+            let n = 1
+            let rows:any = [];
+
 
             while (error > 0.000001 && error != Infinity){
                 if(fx(Xm)*fx(Xr)>0){
@@ -94,24 +106,41 @@ const Home:React.FC =()=>{
                 
 
                 const newCar = {
-                  name: datas.length,
+                  name: n,
                   Xm: Xm
                 }
 
                 const newerror = {
-                    name: dataserror.length,
+                    name: n,
                     Error: error
                   }
-                
+
+
+
+                  let obg:any = {
+                    id: n
+                  }
+                    obg = Object.assign(obg, { ["Xl"]: Xl,["Xr"]:Xr,["Xm"]:Xm,["Error"]:error})
+                    rows.push(obg)
+
+
                   
-                
+                  
                 datas.push(newCar)
                 dataserror.push(newerror)
-
+                n++
             }
+            columns.push({ field: 'Xl', headerName: 'Xl', width: 200 },
+            { field: 'Xr', headerName: 'Xr', width: 200 },
+            { field: 'Xm', headerName: 'Xm', width: 200 },
+            { field: 'Error', headerName: 'Error', width: 200 })
             // console.log(datas)
             setCars(datas)
             setError(dataserror)
+
+            setcoloumnTable(columns)
+            setdataTable(rows)
+
             return Xm
         }
         
@@ -120,6 +149,10 @@ const Home:React.FC =()=>{
             let X1:number = ((Xl * Fxr) - (Xr * Fxl))/(Fxr-Fxl)
             let x_old:number = 0;
             let error:number = Math.abs((X1-x_old)/X1)
+
+            let n = 1
+            let rows:any = [];
+
             while (error > 0.000001 && error != Infinity){
                 console.log("fxr",Fxr);
                 if(fx(X1)*fx(Xr) > 0){
@@ -138,20 +171,35 @@ const Home:React.FC =()=>{
                 error = Math.abs((X1-x_old)/X1)
 
                 const newCar = {
-                    name: datas.length,
+                    name: n,
                     Xm: X1
                   }
                   const newerror = {
-                    name: dataserror.length,
+                    name: n,
                     Error: error
                   }
 
+                  let obg:any = {
+                    id: n
+                  }
+                    obg = Object.assign(obg, { ["Xl"]: Xl,["Xr"]:Xr,["Xm"]:X1,["Error"]:error})
+                    rows.push(obg)
+
                   datas.push(newCar)
                   dataserror.push(newerror)
+                  n++
 
             }
             setCars(datas)
             setError(dataserror)
+
+            columns.push({ field: 'Xl', headerName: 'Xl', width: 200 },
+            { field: 'Xr', headerName: 'Xr', width: 200 },
+            { field: 'Xm', headerName: 'Xm', width: 200 },
+            { field: 'Error', headerName: 'Error', width: 200 })
+
+            setcoloumnTable(columns)
+            setdataTable(rows)
             return X1
         }
         const Onepoint = () => {
@@ -160,6 +208,7 @@ const Home:React.FC =()=>{
             let X2:number = fx(x_old)
             let x_old_old:number  = 0
             let error:number = Math.abs((X2-x_old)/X2)
+
             while (error > 0.000001 && error != Infinity){
                 x_old_old = x_old
                 X2 = fx(x_old)
@@ -193,24 +242,40 @@ const Home:React.FC =()=>{
             let eqnewton = fxnewton(xold)
             let xnew = xold + eqnewton
             let error = Math.abs((xnew-xold)/xnew)
-            console.log(xnew)
+            let n = 1
+            let rows:any = [];
+
             while (error > 0.000001 && error !== Infinity){
                 xold = xnew
                 xnew = xold + fxnewton(xold)
                 error = Math.abs(xnew-xold)/xnew
                 const newCar = {
-                    name: datas.length,
+                    name: n,
                     Xm: xnew
                   }
                   const newerror = {
-                    name: dataserror.length,
+                    name: n,
                     Error: error
                   }
+                  let obg:any = {
+                    id: n
+                  }
+                    obg = Object.assign(obg, { ["Xbegin"]: xold,["Xnew"]:xnew,["Error"]:error})
+                    rows.push(obg)
+
                   datas.push(newCar)
                   dataserror.push(newerror)
+                  n++
             }
             setCars(datas)
             setError(dataserror)
+
+            columns.push({ field: 'Xbegin', headerName: 'Xbegin', width: 200 },
+            { field: 'Xnew', headerName: 'Xnew', width: 200 },
+            { field: 'Error', headerName: 'Error', width: 200 })
+
+            setcoloumnTable(columns)
+            setdataTable(rows)
             return xnew
         }
         
@@ -238,7 +303,6 @@ const Home:React.FC =()=>{
 
 
     const handleSubmit = async (e:any)=> {
-        alert('ขอบเขตซ้าย: '+test.left+' '+'ขอบเขตขวา: '+test.right);
         // let a = derivative('x^2+2x', 'x').toString()
         console.log("latex submit",latex)
         problem(test.left,test.right,test.begin,latex,selectMethod)
@@ -296,8 +360,9 @@ const Home:React.FC =()=>{
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {/* <!-- Replace with your content --> */}
           <div className="px-4 py-6 sm:px-0">
-          <select onChange={(e)=>{
+          <select data-testid="select-option" onChange={(e)=>{
                    const sel = e.target.value;
+                   setcoloumnTable([])
                    setselect(sel)
                            let tokenStr = 'tle1234';
 
@@ -321,13 +386,13 @@ const Home:React.FC =()=>{
                         //    calculator.setExpression({ id: 'graph1', latex: desmoslatex });
                            break
                            case "FalsePosition":
-                               console.log(response.data.keepquestion)
-                               setselecteq(response.data.keepquestion.FalsePosition[0].eq)
+                            console.log(response.data.keepquestion)
+                            setselecteq(response.data.keepquestion.FalsePosition[0].eq)
                             setselectobg(response.data.keepquestion.FalsePosition)
-                           setLatex(response.data.keepquestion.FalsePosition[0].eq)
-                           settest({left:response.data.keepquestion.FalsePosition[0].left,right:response.data.keepquestion.FalsePosition[0].right,begin:'0'})
-                           problem(response.data.keepquestion.FalsePosition[0].left,response.data.keepquestion.FalsePosition[0].right,'0',response.data.keepquestion.FalsePosition[0].eq,e.target.value)
-                           console.log("2"+e.target.value)
+                            setLatex(response.data.keepquestion.FalsePosition[0].eq)
+                            settest({left:response.data.keepquestion.FalsePosition[0].left,right:response.data.keepquestion.FalsePosition[0].right,begin:'0'})
+                            problem(response.data.keepquestion.FalsePosition[0].left,response.data.keepquestion.FalsePosition[0].right,'0',response.data.keepquestion.FalsePosition[0].eq,e.target.value)
+                          //  console.log("2"+e.target.value)
         
                            //    const desmoslatexFalse:string = "y="+response.data.keepquestion.FalsePosition[0].eq;
                         //    calculator.setExpression({ id: 'graph1', latex: desmoslatexFalse });
@@ -359,13 +424,15 @@ const Home:React.FC =()=>{
                   })
                    
                }} className="border-b-2 m-0 border-zinc-700	">
-                   <option value="Bisection">BisectionMethod</option>
-                   <option value="FalsePosition">FalsePosition</option>
-                   <option value="OnePointInteration">OnePointInteration</option>
-                   <option value="NewtonRaphson">NewtonRaphson</option>
+                   <option value="Bisection" >BisectionMethod</option>
+                   <option value="FalsePosition">FalsePositionMethod</option>
+                   <option value="OnePointInteration" >OnePointInteration</option>
+                   <option value="NewtonRaphson" >NewtonRaphson</option>
                </select>
 
-               <select onChange={(e)=>{
+               <select 
+               onChange={(e)=>{
+                 console.log(e.target.value)
                    setselecteq(e.target.value)
                    let B = JSON.parse(e.target.value)
                    problem(B.left,B.right,'0',B.eq,selectMethod)
@@ -373,7 +440,7 @@ const Home:React.FC =()=>{
                     settest({left:B.left,right:B.right,begin:'0'})
                    console.log(B)
 
-               }} value={selecteq}>
+               }} data-testid="select-problem" value={selecteq}>
                   {
                   selectobg.map(({ eq, left,right }) => (
             <option value={'{"eq":'+`"${eq}"`+','+'"left":'+left+','+'"right":'+right+'}'}>{eq}</option>
@@ -386,6 +453,7 @@ const Home:React.FC =()=>{
                 <EditableMathField
                     style={{ display: "flex", color: "red", flexDirection: "column",width: "100px"}}
                     latex={latex}
+                    data-testid="eq"
                     onChange={(mathField) => {
                         setLatex(mathField.latex())
                     }}
@@ -393,15 +461,15 @@ const Home:React.FC =()=>{
                  {
                     selectMethod === "Bisection" &&  
                     <div>
-                        <input value={test.left}  onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"}/>
-                         <input value={test.right} onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"}/>
+                        <input value={test.left}  onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"} data-testid="bileft"/>
+                         <input value={test.right} onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"} data-testid="biright"/>
                     </div>
                 }
                 {
                     selectMethod === "FalsePosition" &&  
                     <div>
-                        <input value={test.left}  onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"}/>
-                         <input value={test.right} onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"}/>
+                        <input value={test.left}  onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"} data-testid="faileft"/>
+                         <input value={test.right} onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"} data-testid="failright"/>
                     </div>
                 }
                 {
@@ -416,14 +484,13 @@ const Home:React.FC =()=>{
                         <input value={test.begin}  onChange={inputsHandler} name="begin" placeholder={"ค่าเริ่มต้น"}/>
                     </div>
                 }
-                <input type="submit" name="submit"/>
-                <p>{latex}</p>
+                <button type="submit">submit</button>
                 {/* <p>{latex.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*$2').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*$2').replace(/x/g,'-10').replace(/(e)([-+]?[0-9]*\.?[0-9]+)/g, '$1*$2').replace(/([-][0-9]*\.?[0-9]+)\^([-+]?[0-9]*\.?[0-9]+)/,'($1)^$2').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan')}</p> */}
                 {/* .replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/{\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}}/,'($1/$2)') */}
                 {/* <p>{latex.replace(/x/g,'-3').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\frac3)(2)/).replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')')}</p> */}
                 <p>{latex.replace(/[^\\]*\\frac{(.+)}{(.+)}$/g,'$1/$2')}</p>
 
-                <h2>{res}</h2>
+                <h2 data-testid="testgg">Result: {res}</h2>
                 <h2 style={{marginLeft: "450px"}}>กราฟจากสมการ</h2>
 
                 <LineChart width={1000} height={600} data={plotgraph} 
@@ -491,6 +558,16 @@ const Home:React.FC =()=>{
           <Area type="monotone" dataKey="Error" stroke="#000" fill="#FF2400" />
           <Brush/>
         </AreaChart>
+
+        <div style={{ height: 650, width: 1000 }}>
+                          <DataGrid
+                          rows={dataTable}
+                          columns={coloumnTable}
+                          pageSize={10}
+                          rowsPerPageOptions={[5]}
+                          disableSelectionOnClick
+                          />
+                          </div>
 
     {/* <div>* static mathquill</div>
       <div>

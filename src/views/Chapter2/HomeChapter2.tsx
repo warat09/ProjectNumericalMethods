@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as math from 'mathjs'
 
-import {Link, Route, Routes,Router} from "react-router-dom";
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { index, row } from "mathjs";
+import axios from "axios";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import InputLabel from "@mui/material/InputLabel";
+import { Box, FormControl } from "@mui/material";
+
+
+
 
 const Home:React.FC =()=>{
     const [selectMethod,setselectMethod] = useState("Cramer's_Rule")
@@ -16,13 +23,16 @@ const Home:React.FC =()=>{
   
     const [matrixA, setmatrixA] = useState([0]);
     const [matrixB, setmatrixB] = useState([0]);
+    const [showmatrixA, setshowmatrixA] = useState([0]);
+    const [showmatrixB, setshowmatrixB] = useState([0]);
+    const [matrixBegin, setmatrixBegin] = useState([0]);
+
     const [dataTable, setdataTable] = useState([{id: 1}]);
     const [coloumnTable, setcoloumnTable] = React.useState<GridColDef[]>([])
 
-
+    const [selectobg,setselectobg] = useState([])
+    const [selecteq,setselecteq] = useState(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
     
-  
-  
       console.log(matrixSize)
       let tokenStr = 'tle1234';
       const columns: GridColDef[] = [
@@ -65,6 +75,17 @@ const Home:React.FC =()=>{
   
       return matrixBoxB
   }
+  const inputMatrixBegin = () => {
+  
+    var matrixBoxBegin = [];
+
+    for (let row = 0; row < matrixSize.rows; row++) {
+        matrixBoxBegin.push(<input id={row.toString()} type="text" onChange={handleMatrixBeginInput} />)
+        matrixBoxBegin.push(<br />)
+    }
+
+    return matrixBoxBegin
+}
     const handleMatrixAInput = async (e:any)=> {
         let matrix = Array(matrixSize.rows)
   
@@ -116,35 +137,45 @@ const Home:React.FC =()=>{
     else {
       temp_matrix = JSON.parse(JSON.stringify(matrixB))
     }
-  
-    //  matrix.push(parseInt(e.target.value))
-    //  console.log(matrix)
-    //  for(let i = 0;i < matrixSize.rows;i++){
-    //   matrix[i] = parseInt(e.target.value)
-    //  }
-  
     temp_matrix[rowsid] = parseInt(e.target.value)
     setmatrixB(temp_matrix)
-  
-    // console.log(temp_matrix)
-  
-  
-    // try{
-    // }
-    // catch(e){
-    //   console.log(e)
-    // }
-    
-  
-  
       e.preventDefault();
   }
 
-    const problem =(mA:Array<number>,mB:Array<number>)=>{
-        console.log("type ma is "+mA)
+  const handleMatrixBeginInput = async (e:any)=> {
+    console.log("Input index B "+e.target.id)
+    console.log("Input value B "+e.target.value)
+    let rowsid = parseInt(e.target.id);
+    console.log("row "+rowsid)
+ 
+    let temp_matrix:any  = JSON.stringify(matrixB)
+    if (typeof (matrixB) === 'string') {
+     temp_matrix = JSON.parse(matrixB)
+   }
+   if(temp_matrix.length < 2){
+     temp_matrix = []
+     console.log("length is "+temp_matrix.length)
+     temp_matrix = new Array(matrixSize.rows).fill(0)
+ 
+   }
+   else {
+     temp_matrix = JSON.parse(JSON.stringify(matrixB))
+   }
+   temp_matrix[rowsid] = parseInt(e.target.value)
+   setmatrixBegin(temp_matrix)
+     e.preventDefault();
+ }
+
+    const problem =(mA:Array<number>,mB:Array<number>,Begin:Array<number>,method:string)=>{
+        console.log(mA)
+        console.log(mB)
+        console.log(selectMethod)
             const Cramer = ()=>{
+              console.log("function Cramer")
               let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
               let B:Array<number> = JSON.parse(JSON.stringify(mB))
+              console.log(typeof(mA))
+              console.log(B)
               let temp_A:Array<Array<number>> = []
               
               let X:Array<number> = []
@@ -163,6 +194,201 @@ const Home:React.FC =()=>{
               }
               return X
             }
+            const Gauss_Elimination=()=>{
+              let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
+              let B:Array<number> = JSON.parse(JSON.stringify(mB))
+              let LoopResult:Array<Array<Number>> = []
+              let LoopError:Array<Array<Number>> = []
+              let X:Array<number> = [];for(let i:number = 0;i<A.length;i++) X.push(0);
+              for(let i:number=0;i<A.length;i++)
+              {
+                  for(let j:number=0;j<i;j++)
+                  {
+                      let dummy:number = A[i][j]
+                      for(let k:number=0;k<A.length;k++)
+                      {
+                          if( (dummy*math.abs(A[j][j])>0 && A[j][j]*math.abs(dummy)>0) || (dummy*math.abs(A[j][j])<0&&A[j][j]*math.abs(dummy)<0) )
+                          {
+                              A[i][k] = (A[i][k]*math.abs(A[j][j]))-(A[j][k]*math.abs(dummy))
+                              if(k===A[i].length-1)
+                              {
+                                  B[i] = B[i]*math.abs(A[j][j])-(B[j]*math.abs(dummy))
+                              }
+                          }
+                          else
+                          {
+                              A[i][k] = (A[i][k]*math.abs(A[j][j]))+(A[j][k]*math.abs(dummy))
+                              if(k===A[i].length-1)
+                              {
+                                  B[i] = B[i]*math.abs(A[j][j])+(B[j]*math.abs(dummy))
+                              }
+                          }
+                      }
+                  }
+              }
+              for(let i:number = A.length-1;i>=0;i--)
+              {
+                  let temp:number = 0;
+                  for(let j:number=0;j<A[i].length;j++)
+                  {
+                      if(j!==i)
+                      {
+                          temp+=A[i][j]*B[j]
+                      }
+                  }
+                  if(temp>0)
+                  {
+                      B[i] = (B[i]-math.abs(temp))/A[i][i]
+                  }
+                  else{
+                      B[i] = (B[i]+math.abs(temp))/A[i][i]
+                  }
+              }
+              return [B,LoopResult,LoopError]
+            }
+           const Gauss_Jordan=()=>{
+            let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
+            let B:Array<number> = JSON.parse(JSON.stringify(mB))
+            let LoopResult:Array<Array<Number>> = []
+            let LoopError:Array<Array<Number>> = []
+            let X:Array<number> = [];for(let i:number = 0;i<A.length;i++) X.push(0);
+            for(let i:number=0;i<A.length;i++)
+            {
+                for(let j:number=0;j<i;j++)
+                {
+                    let dummy:number = A[i][j]
+                    for(let k:number=0;k<A.length;k++)
+                    {
+                        if( (dummy*math.abs(A[j][j])>0 && A[j][j]*math.abs(dummy)>0) || (dummy*math.abs(A[j][j])<0&&A[j][j]*math.abs(dummy)<0) )
+                        {
+                            A[i][k] = (A[i][k]*math.abs(A[j][j]))-(A[j][k]*math.abs(dummy))
+                            if(k===A[i].length-1)
+                            {
+                                B[i] = B[i]*math.abs(A[j][j])-(B[j]*math.abs(dummy))
+                            }
+                        }
+                        else
+                        {
+                            A[i][k] = (A[i][k]*math.abs(A[j][j]))+(A[j][k]*math.abs(dummy))
+                            if(k===A[i].length-1)
+                            {
+                                B[i] = B[i]*math.abs(A[j][j])+(B[j]*math.abs(dummy))
+                            }
+                        }
+                    }
+                }
+            }
+            for(let i:number=A.length-1;i>=0;i--)
+            {
+                for(let j:number=A.length-1;j>i;j--)
+                {
+                    let dummy:number = A[i][j]
+                    for(let k:number=0;k<A[i].length;k++)
+                    {
+                        if( (dummy*math.abs(A[j][j])>0 && A[j][j]*math.abs(dummy)>0) || (dummy*math.abs(A[j][j])<0&&A[j][j]*math.abs(dummy)<0) )
+                        {
+                            A[i][k] = (A[i][k]*math.abs(A[j][j]))-(A[j][k]*math.abs(dummy))
+                            if(k===A[i].length-1)
+                            {
+                                B[i] = B[i]*math.abs(A[j][j])-(B[j]*math.abs(dummy))
+                            }
+                        }
+                        else
+                        {
+                            A[i][k] = (A[i][k]*math.abs(A[j][j]))+(A[j][k]*math.abs(dummy))
+                            if(k===A[i].length-1)
+                            {
+                               B[i] = B[i]*math.abs(A[j][j])+(B[j]*math.abs(dummy))
+                            }
+                        }
+                    }
+                }
+            }
+            for(let i:number = A.length-1;i>=0;i--)
+            {
+                let temp:number = 0;
+                for(let j:number=0;j<A[i].length;j++)
+                {
+                    if(j!==i)
+                    {
+                        temp+=A[i][j]*B[j]
+                    }
+                }
+                if(temp>0)
+                {
+                    B[i] = (B[i]-math.abs(temp))/A[i][i]
+                }
+                else{
+                    B[i] = (B[i]+math.abs(temp))/A[i][i]
+                }
+            }
+            return [B,LoopResult,LoopError]
+
+           }
+            const LU = () =>{
+              let a:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
+              let b:Array<number> = JSON.parse(JSON.stringify(mB))
+              let Result:Array<number> = [];
+              let Loop_Result:Array<number> = [];
+              let Loop_Error:Array<number> = [];
+              let Lower:Array<Array<number>> = Array(a.length).fill(0).map(x=>Array(a.length).fill(0));
+              let Upper:Array<Array<number>> = Array(a.length).fill(0).map(x=>Array(a.length).fill(0));
+              let Y:Array<number> = Array(a.length).fill(0);
+              let X:Array<number> = Array(a.length).fill(0);
+              for(let A:number = 0;A<a.length;A++)
+              {
+                  for(let B:number = A;B<a.length;B++)
+                  {
+                      let sum:number = 0;
+                      for(let C:number=0;C<A;C++)
+                      {
+                          sum+= (Lower[A][C]*Upper[C][B]);
+                      }
+                      Upper[A][B] = a[A][B] - sum;
+                  }
+                  for(let B:number = A;B<a[0].length;B++)
+                  {
+                      if(A===B)
+                      {
+                          Lower[A][A] = 1;
+                      }
+                      else
+                      {
+                          let sum:number = 0;
+                          for(let C:number=0;C<A;C++)
+                          {
+                              sum+= (Lower[B][C]*Upper[C][A]);
+                          }
+                          Lower[B][A] = (a[B][A] - sum )/Upper[A][A];
+                      }
+                  }
+              }
+              for(let i =0;i<a.length;i++)
+              {
+                  let sum =0;
+                  for(let j= 0;j<a.length;j++)
+                  {
+                      if(j!==i)
+                      {
+                          sum+=Lower[i][j]*Y[j];
+                      }
+                  }
+                  Y[i]=(b[i]-sum)/Lower[i][i];
+              }
+              for(let i =a.length-1;i>=0;i--)
+              {
+                  let sum =0;
+                  for(let j= 0;j<a[0].length;j++)
+                  {
+                      if(j!==i)
+                      {
+                          sum+=Upper[i][j]*X[j];
+                      }
+                  }
+                  X[i]=parseFloat(((Y[i]-sum)/Upper[i][i]).toPrecision(15));
+              }
+              return [X,Loop_Result,Loop_Error]
+            }
             const Jacobi = () =>{
               // const a = [[5,2,0,0],
               //                 [2,5,2,0],
@@ -175,12 +401,13 @@ const Home:React.FC =()=>{
               let b:Array<number> = JSON.parse(JSON.stringify(mB))
       
               let A = []
-              let x_old = [0,0,0,0]
+              let x_old = JSON.parse(JSON.stringify(Begin))
               let x_new = []
               let xsome:any = []
               let n = 1
               let error = [1,1,1,1]
               let rows:any = [];
+              console.log(x_old)
 
               
         
@@ -192,7 +419,7 @@ const Home:React.FC =()=>{
                     }
                     return false
                 }
-                while(checkerror(error)){
+                while(checkerror(error) && n <= 1000){
                   for(let i = 0;i < a.length;i++){
                   A[i] = b[i]
                   for(let j = 0;j < a[i].length;j++){
@@ -218,7 +445,7 @@ const Home:React.FC =()=>{
               let obg:any = {
                 id: n
               }
-              for(let i =0;i < matrixSize.rows;i++){
+              for(let i =0;i < b.length;i++){
                 obg = Object.assign(obg, { ["X" + (i + 1)]: x_old[i],["E"+(i+1)]:error[i]})
               }
               // console.log(typeof(obg))
@@ -229,6 +456,13 @@ const Home:React.FC =()=>{
               // console.log(rows)
               n++
               }
+              for(let i = 1;i < b.length+1;i++){
+                columns.push({ field: 'X'+i, headerName: 'X'+i, width: 200 })
+              }
+              for(let i = 1;i < b.length+1;i++){
+                columns.push({ field: 'E'+i, headerName: 'error'+i, width: 200 })
+              }
+              setcoloumnTable(columns)
               setdataTable(rows)
             }
             const Gaiss_seidel = () => {
@@ -245,7 +479,7 @@ const Home:React.FC =()=>{
               // const b = [12,17,14,7]
               let b:Array<number> = JSON.parse(JSON.stringify(mB))
               let A = []
-              let x_old = [0,0,0,0]
+              let x_old = JSON.parse(JSON.stringify(Begin))
               let x_new = [0,0,0,0]
               let xsome:any = []
               let n = 1
@@ -260,7 +494,7 @@ const Home:React.FC =()=>{
                 return false
             }
         
-            while(checkerror(error)){
+            while(checkerror(error) && n <=1000){
               for(let i = 0;i < a.length;i++){
               A[i] = b[i]
               for(let j = 0;j < a[i].length;j++){
@@ -286,7 +520,7 @@ const Home:React.FC =()=>{
           let obg:any = {
             id: n
           }
-          for(let i =0;i < matrixSize.rows;i++){
+          for(let i =0;i < b.length;i++){
             obg = Object.assign(obg, { ["X" + (i + 1)]: x_old[i],["E"+(i+1)]:error[i]})
           }
           rows.push(obg)
@@ -295,7 +529,14 @@ const Home:React.FC =()=>{
           console.log("round "+n)
           n++
           }
-            setdataTable(rows)
+          for(let i = 1;i < b.length+1;i++){
+            columns.push({ field: 'X'+i, headerName: 'X'+i, width: 200 })
+          }
+          for(let i = 1;i < b.length+1;i++){
+            columns.push({ field: 'E'+i, headerName: 'error'+i, width: 200 })
+          }
+          setcoloumnTable(columns)
+           setdataTable(rows)
             }
             const conjugate = () => {
               let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
@@ -308,7 +549,7 @@ const Home:React.FC =()=>{
               //                                                 [2,5,2,0],
               //                                                 [0,2,5,2],
               //                                                 [0,0,2,5]]
-              let X:Array<number> = [0,0,0,0]
+              let X:Array<number> = JSON.parse(JSON.stringify(Begin))
               // let B:Array<number> = [12,17,14,7]
         
               let R:any = math.subtract(math.multiply(A,X),B) ;
@@ -341,7 +582,7 @@ const Home:React.FC =()=>{
               let obg:any = {
                 id: n
               }
-              for(let i =0;i < matrixSize.rows;i++){
+              for(let i =0;i < B.length;i++){
                 obg = Object.assign(obg, { ["X" + (i + 1)]: X[i],["R"+(i+1)]:R[i],["D"+(i+1)]:D[i],["D1_"+(i+1)]:D1[i],["error"]:Error,["lamda"]:lamda,["alpha"]:alpha})
               }
               rows.push(obg)
@@ -351,14 +592,42 @@ const Home:React.FC =()=>{
                   CheckError = Error
                   n++
                 }
+                for(let i = 1;i < B.length+1;i++){
+                  columns.push({ field: 'X'+i, headerName: 'X'+i, width: 200 })
+                }
+                for(let i = 1;i < B.length+1;i++){
+                  columns.push({ field: 'R'+i, headerName: 'R'+i, width: 200 })
+                }
+                for(let i = 1;i < B.length+1;i++){
+                  columns.push({ field: 'D'+i, headerName: 'D'+i, width: 200 })
+                }
+                for(let i = 1;i < B.length+1;i++){
+                  columns.push({ field: 'D1_'+i, headerName: 'D1_'+i, width: 200 })
+                }
+                columns.push({ field: 'error', headerName: 'Error', width: 200 })
+                columns.push({ field: 'lamda', headerName: 'Lamda', width: 200 })
+                columns.push({ field: 'alpha', headerName: 'Alpha', width: 200 })
+    
+    
+                setcoloumnTable(columns)
                 setdataTable(rows)
               }
+
             
-            switch(selectMethod){
+            switch(method){
                 case "Cramer's_Rule":
                     setresult(Cramer())
                     console.log(Cramer())
                     break;
+                case "Gauss_Elimination":
+                  console.log(Gauss_Elimination())
+                break
+                case "Gauss_Jordan":
+                  console.log(Gauss_Jordan())
+                  break;
+                case "LU_Decomposition":
+                  console.log(LU())
+                  break;
                 case "Jacobi_Iteration":
                     Jacobi()
                     break
@@ -372,52 +641,7 @@ const Home:React.FC =()=>{
           }
 
     const handleSubmit = async (e:any)=> {
-        switch(selectMethod){
-          case "Cramer's_Rule":
-            problem(matrixA,matrixB)
-            break
-          case "Jacobi_Iteration":
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'X'+i, headerName: 'X'+i, width: 200 })
-            }
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'E'+i, headerName: 'error'+i, width: 200 })
-            }
-            setcoloumnTable(columns)
-            problem(matrixA,matrixB)
-            break
-          case "Gauss_Seidal":
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'X'+i, headerName: 'X'+i, width: 200 })
-            }
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'E'+i, headerName: 'error'+i, width: 200 })
-            }
-            setcoloumnTable(columns)
-            problem(matrixA,matrixB)
-            break
-          case "Conjugate":
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'X'+i, headerName: 'X'+i, width: 200 })
-            }
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'R'+i, headerName: 'R'+i, width: 200 })
-            }
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'D'+i, headerName: 'D'+i, width: 200 })
-            }
-            for(let i = 1;i < matrixSize.rows+1;i++){
-              columns.push({ field: 'D1_'+i, headerName: 'D1_'+i, width: 200 })
-            }
-            columns.push({ field: 'error', headerName: 'Error', width: 200 })
-            columns.push({ field: 'lamda', headerName: 'Lamda', width: 200 })
-            columns.push({ field: 'alpha', headerName: 'Alpha', width: 200 })
-
-
-            setcoloumnTable(columns)
-            problem(matrixA,matrixB)
-            break
-        }
+      problem(matrixA,matrixB,matrixBegin,selectMethod)
         // console.log("matrixA is "+matrixA)
         // console.log("matrixB is "+matrixB)
         e.preventDefault();
@@ -425,6 +649,46 @@ const Home:React.FC =()=>{
       const listItems = resultmatrix.map((number,index) =>
         <p className="flex-1">X{index+1}:{number}</p>
       );
+      useEffect(()=>{
+        console.log('123123123')
+        let tokenStr = 'tle1234';
+        
+        axios.get("http://localhost:6060/LinearAlgebra",{ headers: {
+            "access-token": `${tokenStr}` 
+          } })
+          .then(response => {
+            setselectobg(response.data.keepquestion.Cramer_Rule)
+            // '{"MatrixA":'+`"${MatrixA}"`+','+'"MatrixB":'+`"${MatrixB}"`+'}'
+            let A = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixA)
+            let B = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixB)
+            let Begin = JSON.parse(response.data.keepquestion.Cramer_Rule[0].begin)
+            setshowmatrixA(A)
+            setshowmatrixB(B)
+
+            console.log(A)
+            console.log(B)
+            problem(A,B,Begin,"Cramer's_Rule")
+              // do something about response
+          })
+      },[])
+      console.log(selectobg);
+      const showMatrix = (matrix:any) => {
+        console.log(matrix)
+        try {
+            return (
+                <MathJax dynamic inline>
+                    {"\\(" +
+                        math.parse(matrix.toString().replace(/\*/g, "")).toTex({
+                            parenthesis: "keep",
+                            implicit: "show",
+                        }) +
+                        "\\)"}
+                </MathJax>
+            );
+        } catch (e:any) {
+            return <MathJax dynamic>{e.toString()}</MathJax>;
+        }
+    };
       console.log(dataTable)
       console.log(columns)
 
@@ -443,6 +707,93 @@ const Home:React.FC =()=>{
                 setselectMethod(e.target.value)
                 setcoloumnTable([])
                 setresult([0])
+
+                let tokenStr = 'tle1234';
+                axios.get("http://localhost:6060/LinearAlgebra",{ headers: {
+                  "access-token": `${tokenStr}` 
+                } })
+                .then(response => {                    
+                    let A,B,Begin
+                    switch(e.target.value){
+                        case "Cramer's_Rule":
+                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                          setselectobg(response.data.keepquestion.Cramer_Rule)
+                          A = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixA)
+                          B = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixB)
+                          Begin = JSON.parse(response.data.keepquestion.Cramer_Rule[0].begin)
+                          problem(A,B,Begin,e.target.value)
+                         break
+
+                         case "Gauss_Elimination": 
+                         setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                         setselectobg(response.data.keepquestion.Gauss_Elimination)
+                         A = JSON.parse(response.data.keepquestion.Gauss_Elimination[0].MatrixA)
+                         B = JSON.parse(response.data.keepquestion.Gauss_Elimination[0].MatrixB)
+                         problem(A,B,[0],e.target.value)
+                         console.log(e.target.value)
+                         break
+
+                         case "Gauss_Jordan":
+                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                          setselectobg(response.data.keepquestion.Gauss_Jordan) 
+                          A = JSON.parse(response.data.keepquestion.Gauss_Jordan[0].MatrixA)
+                          B = JSON.parse(response.data.keepquestion.Gauss_Jordan[0].MatrixB)
+                          problem(A,B,[0],e.target.value)
+
+                         console.log(e.target.value)
+                         break
+
+                         case "LU_Decomposition":
+                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                          setselectobg(response.data.keepquestion.LU_Decomposition)
+                          A = JSON.parse(response.data.keepquestion.LU_Decomposition[0].MatrixA)
+                          B = JSON.parse(response.data.keepquestion.LU_Decomposition[0].MatrixB)
+                          problem(A,B,[0],e.target.value)  
+                         console.log(e.target.value)
+                         break
+
+                         case "Jacobi_Iteration": 
+                         setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                         setselectobg(response.data.keepquestion.Jacobi_Iteration)
+                         A = JSON.parse(response.data.keepquestion.Jacobi_Iteration[0].MatrixA)
+                         B = JSON.parse(response.data.keepquestion.Jacobi_Iteration[0].MatrixB)
+                         Begin = JSON.parse(response.data.keepquestion.Jacobi_Iteration[0].begin)
+                         problem(A,B,Begin,e.target.value)
+  
+                         console.log(Begin)
+                         break
+
+                         case "Gauss_Seidal":
+                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                          setselectobg(response.data.keepquestion.Gauss_Seidal)
+                          A = JSON.parse(response.data.keepquestion.Gauss_Seidal[0].MatrixA)
+                          B = JSON.parse(response.data.keepquestion.Gauss_Seidal[0].MatrixB)
+                          Begin = JSON.parse(response.data.keepquestion.Gauss_Seidal[0].begin)
+                          problem(A,B,Begin,e.target.value)
+  
+                          console.log(e.target.value)  
+                          break
+
+                         case "Conjugate":
+                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
+                          setselectobg(response.data.keepquestion.Conjugate)
+                          A = JSON.parse(response.data.keepquestion.Conjugate[0].MatrixA)
+                          B = JSON.parse(response.data.keepquestion.Conjugate[0].MatrixB)
+                          Begin = JSON.parse(response.data.keepquestion.Conjugate[0].begin)
+                          problem(A,B,Begin,e.target.value)  
+                           console.log(e.target.value)
+                           break
+
+                         default:
+                             console.log("ddddd")
+                             break
+                    }
+                    // do something about response
+                })
+                
+                .catch(err => {
+                    console.error(err)
+                })
             }}>
                 <option value="Cramer's_Rule">Cramer's_Rule</option>
                 <option value="Gauss_Elimination">Gauss_Elimination</option>
@@ -452,6 +803,45 @@ const Home:React.FC =()=>{
                 <option value="Gauss_Seidal">Gauss_Seidal</option>
                 <option value="Conjugate">Conjugate</option>
             </select>
+            <Box sx={{ m: 1, minWidth: 500 }}>
+            <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">problem</InputLabel>
+            <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"           
+            label="problem"
+            value={selecteq}
+
+            onChange={(e)=>{
+                   setselecteq(e.target.value)
+                   console.log(e.target.value)
+                   let B = JSON.parse(e.target.value)
+                   console.log(B)
+
+                   let MatrixA = JSON.parse(B.MatrixA)
+                   let MatrixB = JSON.parse(B.MatrixB)
+                   let MatrixBegin = JSON.parse(B.MatrixBegin)
+                   setshowmatrixA(MatrixA)
+                   setshowmatrixB(MatrixB)
+
+                   problem(MatrixA,MatrixB,MatrixBegin,selectMethod)
+
+                   console.log(e.target.value)
+                  //  console.log(MatrixB)
+
+               }}>
+                  {
+                  selectobg.map(({ MatrixA,MatrixB,begin}) => (
+                    <MenuItem  value={'{"MatrixA":'+`"${MatrixA}"`+','+'"MatrixB":'+`"${MatrixB}"`+','+'"MatrixBegin":'+`"${begin}"`+'}'}>
+                      MatrixA : {MatrixA} MatrixB : {MatrixB}
+                      </MenuItem>
+                    ))
+                    }
+               </Select>
+              </FormControl>
+              </Box>
+
+
             <form onSubmit={handleSubmit}>
               <input
               type="number"
@@ -485,7 +875,21 @@ const Home:React.FC =()=>{
               />
               <h1>row: {matrixSize.rows}</h1>
               <h1>columns: {matrixSize.columns}</h1>
-              <div className="input_matrix">
+              <MathJaxContext>
+                  <MathJax dynamic>
+                      MatrixA : {showMatrix(JSON.stringify(showmatrixA))}
+                      MatrixB : {showMatrix(JSON.stringify(showmatrixB))}
+                    </MathJax>
+              </MathJaxContext>
+
+              {
+                selectMethod === "Cramer's_Rule" &&
+                
+                // <div>{resultmatrix.map((number)=>{
+                //   <h1>{number}</h1>
+                // })}</div>
+                <div>
+                <div className="input_matrix">
                 <div className="column_matrixA">
                 <label>MatrixA</label>
                     <div>
@@ -503,15 +907,9 @@ const Home:React.FC =()=>{
               </div>
               <br/>
               <input type="submit" name="submit"/>
-              {
-                selectMethod === "Cramer's_Rule" &&
-                // <div>{resultmatrix.map((number)=>{
-                //   <h1>{number}</h1>
-                // })}</div>
-                <div>
-                  {resultmatrix[0] > 0 &&
-                                    listItems
-                                }
+                  {                                    
+                  listItems
+                }                                
                 </div>
               }
               {/* {
@@ -529,6 +927,30 @@ const Home:React.FC =()=>{
               {
                 selectMethod === "Jacobi_Iteration" &&
                     <div>
+                        <div className="input_matrix">
+                        <div className="column_matrixA">
+                        <label>MatrixA</label>
+                            <div>
+                            {inputMatrixA()}
+                            </div>
+                        </div>
+
+                        <div className="column_matrixB">
+                        <label>MatrixB</label>
+                            <div>
+                            {inputMatrixB()}
+                            </div>
+                        </div>
+                        <div className="column_matrixB">
+                        <label>MatrixBegin</label>
+                            <div>
+                            {inputMatrixBegin()}
+                            </div>
+                        </div>
+
+                      </div>
+              <br/>
+              <input type="submit" name="submit"/>
                       {coloumnTable.length > 0 &&
                       <div style={{ height: 650, width: '100' }}>
 
@@ -553,17 +975,44 @@ const Home:React.FC =()=>{
               {
                 selectMethod === "Gauss_Seidal" &&
 
-                                <div style={{ height: 650, width: '100%' }}>
-                                {coloumnTable.length > 0 &&
-                                    <DataGrid
-                                    rows={dataTable}
-                                    columns={coloumnTable}
-                                    pageSize={10}
-                                    rowsPerPageOptions={[5]}
-                                    disableSelectionOnClick
-                                  />
-                                }
-                              </div>
+                        <div>
+                        <div className="input_matrix">
+                        <div className="column_matrixA">
+                        <label>MatrixA</label>
+                            <div>
+                            {inputMatrixA()}
+                            </div>
+                        </div>
+
+                        <div className="column_matrixB">
+                        <label>MatrixB</label>
+                            <div>
+                            {inputMatrixB()}
+                            </div>
+                        </div>
+                        <div className="column_matrixB">
+                        <label>MatrixBegin</label>
+                            <div>
+                            {inputMatrixBegin()}
+                            </div>
+                        </div>
+
+                      </div>
+              <br/>
+              <input type="submit" name="submit"/>
+                      {coloumnTable.length > 0 &&
+                      <div style={{ height: 650, width: '100' }}>
+
+                        <DataGrid
+                        rows={dataTable}
+                        columns={coloumnTable}
+                        pageSize={10}
+                        rowsPerPageOptions={[5]}
+                        disableSelectionOnClick
+                      />
+                      </div>
+                    }
+                    </div>
               }
               {
                 selectMethod === "Gauss_Jordan" &&
