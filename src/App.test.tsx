@@ -18,13 +18,13 @@ test('screen project',()=>{
 it('select chapter1',async ()=>{
   await render(<Chapter1 />)
 
-  await waitFor(()=>{
-    expect(screen.queryByText("Result: 0")).not.toBeInTheDocument()
-  })
+  // await waitFor(()=>{
+  //   expect(screen.queryByText("Result: 0")).not.toBeInTheDocument()
+  // })
   
-//   await waitFor(()=>{
-//      expect(screen.getByTestId("testgg").textContent).toEqual("Result: 1.8988289833068848")
-//   })
+  await waitFor(()=>{
+     expect(screen.getByTestId("testgg").textContent).toEqual("Result: 0")
+  })
 
 //   await waitFor(()=>{
 //     fireEvent.change(screen.getByTestId("select-problem") as HTMLInputElement,{
