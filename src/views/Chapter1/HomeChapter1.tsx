@@ -402,8 +402,7 @@ const Home:React.FC =()=>{
                    <option value="NewtonRaphson" >NewtonRaphson</option>
                </select>
 
-               <select 
-               onChange={(e)=>{
+               <select onChange={(e)=>{
                    setselecteq(e.target.value)
                    let B = JSON.parse(e.target.value)
                    problem(B.left,B.right,'0',B.eq,selectMethod)

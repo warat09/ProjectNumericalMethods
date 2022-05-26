@@ -15,7 +15,7 @@ test('screen project',()=>{
   expect(screen.getByText("Project")).toBeInTheDocument()
 })
 
-it('select chapter1',async ()=>{
+test('select chapter1',async ()=>{
   await render(<Chapter1 />)
 
   await waitFor(()=>{
