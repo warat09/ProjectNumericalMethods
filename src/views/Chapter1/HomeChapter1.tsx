@@ -52,21 +52,14 @@ const Home:React.FC =()=>{
     const problem = (left:string,right:string,begin:string,eq:string,method:string) =>{
         const fx = (x:number) =>{
             let X:number = x
-            // console.log('X',X)
             let pow:string = eq.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/x/g,X.toString()).replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/{/g,'(').replace(/}/g,')')
 
-            // let pow:string = eq.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*$2').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*$2').replace(/x/g,X.toString()).replace(/(e)([-+]?[0-9]*\.?[0-9]+)/g, '$1*$2').replace(/([-][0-9]*\.?[0-9]+)\^([-+]?[0-9]*\.?[0-9]+)/,'($1)^$2').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')')
-            // console.log("samagan ku is ",pow)
-            // console.log('pow is',pow)
-            // let a :any = ce.N(parse(pow.replace(/x/g,X.toString())))
-            // console.log('ans is',a)
             let eee : any = mathjs.parse(pow)
             let a : any = eee.evaluate()
             // mathjs.evaluate(eq,{x: X})
             return mathjs.evaluate(eq,{x: X})
         }
         const setgraph =() =>{
-          console.log("fx11"+fx(-11))
           for(let i = -500;i < 500;i++){
             const newgraph = {
               name:"ploat",
@@ -80,10 +73,8 @@ const Home:React.FC =()=>{
         const Bisection = () => {
             let Xl : number =  parseFloat(left)
             let Xr : number = parseFloat(right)
-            console.log(Xl+Xr)
             let x_old : number = 0
             let Xm : number = (Xl+Xr)/2
-            console.log("ssss="+Xl+Xr)
             let error : number = Math.abs((Xm-x_old)/Xm)
             let n = 1
             let rows:any = [];
@@ -93,15 +84,13 @@ const Home:React.FC =()=>{
                 if(fx(Xm)*fx(Xr)>0){
                     x_old = Xr
                     Xr = Xm
-                    // console.log(Xr)
+
                 }
                 else{
                     x_old = Xl
                     Xl= Xm
-                    // console.log(Xl)
                 }
                 Xm = (Xl+Xr)/2
-                // console.log("Xm = "+Xm)
                 error = Math.abs((Xm-x_old)/Xm)
                 
 
@@ -134,7 +123,6 @@ const Home:React.FC =()=>{
             { field: 'Xr', headerName: 'Xr', width: 200 },
             { field: 'Xm', headerName: 'Xm', width: 200 },
             { field: 'Error', headerName: 'Error', width: 200 })
-            // console.log(datas)
             setCars(datas)
             setError(dataserror)
 
@@ -154,18 +142,15 @@ const Home:React.FC =()=>{
             let rows:any = [];
 
             while (error > 0.000001 && error != Infinity){
-                console.log("fxr",Fxr);
                 if(fx(X1)*fx(Xr) > 0){
                     x_old = Xr
                     Xr = X1
-                    console.log("xoldright",x_old)
-                    console.log("Xr",Xr)
+
                 }
                 else{
                     x_old = Xl
                     Xl = X1
-                    console.log("xoldleft",x_old)
-                    console.log("Xl",Xl)
+
                 }
                 X1 = ((Xl * fx(Xr)) - (Xr * fx(Xl)))/(fx(Xr)-fx(Xl))
                 error = Math.abs((X1-x_old)/X1)
@@ -203,7 +188,6 @@ const Home:React.FC =()=>{
             return X1
         }
         const Onepoint = () => {
-            console.log("begin one point")
             let x_old:number = parseFloat(begin)
             let X2:number = fx(x_old)
             let x_old_old:number  = 0
@@ -214,7 +198,6 @@ const Home:React.FC =()=>{
                 X2 = fx(x_old)
                 error = Math.abs((X2-x_old)/X2)
                 x_old = X2
-                console.log('error is',error)
                 const newCar = {
                     name: datas.length,
                     Xm: X2
@@ -304,7 +287,6 @@ const Home:React.FC =()=>{
 
     const handleSubmit = async (e:any)=> {
         // let a = derivative('x^2+2x', 'x').toString()
-        console.log("latex submit",latex)
         problem(test.left,test.right,test.begin,latex,selectMethod)
 
 
@@ -315,7 +297,6 @@ const Home:React.FC =()=>{
     };
 
     useEffect(()=>{
-        console.log('123123123')
         let tokenStr = 'tle1234';
         
         axios.get("http://mistersigz.thddns.net:7570/Rootofeqution",{ headers: {
@@ -346,8 +327,7 @@ const Home:React.FC =()=>{
     
     const off = gradientOffset();
 
-    // console.log(selectobg)
-    // console.log(selecteq)
+
     return(
         <div>
 
@@ -381,28 +361,22 @@ const Home:React.FC =()=>{
                            setLatex(response.data.keepquestion.Bisection[0].eq)
                            settest({left:response.data.keepquestion.Bisection[0].left,right:response.data.keepquestion.Bisection[0].right,begin:'0'})
                            problem(response.data.keepquestion.Bisection[0].left,response.data.keepquestion.Bisection[0].right,'0',response.data.keepquestion.Bisection[0].eq,e.target.value)
-                           console.log("1"+e.target.value)
                         //    const desmoslatex:string = "y="+response.data.keepquestion.Bisection[0].eq;
                         //    calculator.setExpression({ id: 'graph1', latex: desmoslatex });
                            break
                            case "FalsePosition":
-                            console.log(response.data.keepquestion)
                             setselecteq(response.data.keepquestion.FalsePosition[0].eq)
                             setselectobg(response.data.keepquestion.FalsePosition)
                             setLatex(response.data.keepquestion.FalsePosition[0].eq)
                             settest({left:response.data.keepquestion.FalsePosition[0].left,right:response.data.keepquestion.FalsePosition[0].right,begin:'0'})
                             problem(response.data.keepquestion.FalsePosition[0].left,response.data.keepquestion.FalsePosition[0].right,'0',response.data.keepquestion.FalsePosition[0].eq,e.target.value)
-                          //  console.log("2"+e.target.value)
-        
-                           //    const desmoslatexFalse:string = "y="+response.data.keepquestion.FalsePosition[0].eq;
-                        //    calculator.setExpression({ id: 'graph1', latex: desmoslatexFalse });
+
                            break
                            case "OnePointInteration":
                             setselecteq(response.data.keepquestion.OnePointInteration[0].eq)
                            setLatex(response.data.keepquestion.OnePointInteration[0].eq)
                            settest({left:'0',right:'0',begin:response.data.keepquestion.OnePointInteration[0].xbegin})
                            problem('0','0',response.data.keepquestion.OnePointInteration[0].xbegin,response.data.keepquestion.OnePointInteration[0].eq,e.target.value)
-                        console.log("3"+e.target.value)  
                             break
                            case "NewtonRaphson":
                             setselecteq(response.data.keepquestion.NewtonRaphson[0].eq)
@@ -410,10 +384,8 @@ const Home:React.FC =()=>{
                             setLatex(response.data.keepquestion.NewtonRaphson[0].eq)
                             settest({left:'0',right:'0',begin:response.data.keepquestion.NewtonRaphson[0].xbegin})
                             problem('0','0',response.data.keepquestion.NewtonRaphson[0].xbegin,response.data.keepquestion.NewtonRaphson[0].eq,e.target.value)
-                             console.log("4"+e.target.value)
                            break
                            default:
-                               console.log("ddddd")
                                break
                       }
                       // do something about response
@@ -432,13 +404,11 @@ const Home:React.FC =()=>{
 
                <select 
                onChange={(e)=>{
-                 console.log(e.target.value)
                    setselecteq(e.target.value)
                    let B = JSON.parse(e.target.value)
                    problem(B.left,B.right,'0',B.eq,selectMethod)
                    setLatex(B.eq)
                     settest({left:B.left,right:B.right,begin:'0'})
-                   console.log(B)
 
                }} data-testid="select-problem" value={selecteq}>
                   {
