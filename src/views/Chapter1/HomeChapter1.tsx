@@ -318,7 +318,7 @@ const Home:React.FC =()=>{
         console.log('123123123')
         let tokenStr = 'tle1234';
         
-        axios.get("http://localhost:6060/Rootofeqution",{ headers: {
+        axios.get("http://mistersigz.thddns.net:7570/Rootofeqution",{ headers: {
             "access-token": `${tokenStr}` 
           } })
           .then(response => {
@@ -367,7 +367,7 @@ const Home:React.FC =()=>{
                            let tokenStr = 'tle1234';
 
 
-                   axios.get("http://localhost:6060/Rootofeqution",{ headers: {
+                   axios.get("http://mistersigz.thddns.net:7570/Rootofeqution",{ headers: {
                     "access-token": `${tokenStr}` 
                   } })
                   .then(response => {
