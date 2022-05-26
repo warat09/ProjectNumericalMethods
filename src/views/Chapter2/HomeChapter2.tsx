@@ -26,6 +26,8 @@ const Home:React.FC =()=>{
     const [showmatrixA, setshowmatrixA] = useState([0]);
     const [showmatrixB, setshowmatrixB] = useState([0]);
     const [matrixBegin, setmatrixBegin] = useState([0]);
+    var [token,settoken] = useState(' ')
+
 
     const [dataTable, setdataTable] = useState([{id: 1}]);
     const [coloumnTable, setcoloumnTable] = React.useState<GridColDef[]>([])
@@ -650,18 +652,22 @@ const Home:React.FC =()=>{
         <p className="flex-1">X{index+1}:{number}</p>
       );
       useEffect(()=>{
-        console.log('123123123')
-        let tokenStr = 'tle1234';
-        
-        axios.get("http://localhost:6060/LinearAlgebra",{ headers: {
-            "access-token": `${tokenStr}` 
+        // console.log('123123123')
+        // let tokenStr = 'tle1234';
+        axios.post('http://mistersigz.thddns.net:7570/login', {
+          "email":"y-title@hotmail.com",
+          "password":"Numer2022"
+        }).then(response =>{
+          settoken(response.data.accessToken)
+          axios.get("http://mistersigz.thddns.net:7570/LinearAlgebra",{ headers: {
+            "Authorization": `Bearer ${response.data.accessToken}` 
           } })
           .then(response => {
-            setselectobg(response.data.keepquestion.Cramer_Rule)
+            setselectobg(response.data.Cramer_Rule)
             // '{"MatrixA":'+`"${MatrixA}"`+','+'"MatrixB":'+`"${MatrixB}"`+'}'
-            let A = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixA)
-            let B = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixB)
-            let Begin = JSON.parse(response.data.keepquestion.Cramer_Rule[0].begin)
+            let A = JSON.parse(response.data.Cramer_Rule[0].MatrixA)
+            let B = JSON.parse(response.data.Cramer_Rule[0].MatrixB)
+            let Begin = JSON.parse(response.data.Cramer_Rule[0].begin)
             setshowmatrixA(A)
             setshowmatrixB(B)
 
@@ -670,6 +676,9 @@ const Home:React.FC =()=>{
             problem(A,B,Begin,"Cramer's_Rule")
               // do something about response
           })
+        })
+        
+
       },[])
       console.log(selectobg);
       const showMatrix = (matrix:any) => {
@@ -709,35 +718,35 @@ const Home:React.FC =()=>{
                 setresult([0])
 
                 let tokenStr = 'tle1234';
-                axios.get("http://localhost:6060/LinearAlgebra",{ headers: {
-                  "access-token": `${tokenStr}` 
+                axios.get("http://mistersigz.thddns.net:7570/LinearAlgebra",{ headers: {
+                "Authorization": `Bearer ${token}` 
                 } })
                 .then(response => {                    
                     let A,B,Begin
                     switch(e.target.value){
                         case "Cramer's_Rule":
                           setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                          setselectobg(response.data.keepquestion.Cramer_Rule)
-                          A = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixA)
-                          B = JSON.parse(response.data.keepquestion.Cramer_Rule[0].MatrixB)
-                          Begin = JSON.parse(response.data.keepquestion.Cramer_Rule[0].begin)
+                          setselectobg(response.data.Cramer_Rule)
+                          A = JSON.parse(response.data.Cramer_Rule[0].MatrixA)
+                          B = JSON.parse(response.data.Cramer_Rule[0].MatrixB)
+                          Begin = JSON.parse(response.data.Cramer_Rule[0].begin)
                           problem(A,B,Begin,e.target.value)
                          break
 
                          case "Gauss_Elimination": 
                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                         setselectobg(response.data.keepquestion.Gauss_Elimination)
-                         A = JSON.parse(response.data.keepquestion.Gauss_Elimination[0].MatrixA)
-                         B = JSON.parse(response.data.keepquestion.Gauss_Elimination[0].MatrixB)
+                         setselectobg(response.data.Gauss_Elimination)
+                         A = JSON.parse(response.data.Gauss_Elimination[0].MatrixA)
+                         B = JSON.parse(response.data.Gauss_Elimination[0].MatrixB)
                          problem(A,B,[0],e.target.value)
                          console.log(e.target.value)
                          break
 
                          case "Gauss_Jordan":
                           setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                          setselectobg(response.data.keepquestion.Gauss_Jordan) 
-                          A = JSON.parse(response.data.keepquestion.Gauss_Jordan[0].MatrixA)
-                          B = JSON.parse(response.data.keepquestion.Gauss_Jordan[0].MatrixB)
+                          setselectobg(response.data.Gauss_Jordan) 
+                          A = JSON.parse(response.data.Gauss_Jordan[0].MatrixA)
+                          B = JSON.parse(response.data.Gauss_Jordan[0].MatrixB)
                           problem(A,B,[0],e.target.value)
 
                          console.log(e.target.value)
@@ -745,19 +754,19 @@ const Home:React.FC =()=>{
 
                          case "LU_Decomposition":
                           setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                          setselectobg(response.data.keepquestion.LU_Decomposition)
-                          A = JSON.parse(response.data.keepquestion.LU_Decomposition[0].MatrixA)
-                          B = JSON.parse(response.data.keepquestion.LU_Decomposition[0].MatrixB)
+                          setselectobg(response.data.LU_Decomposition)
+                          A = JSON.parse(response.data.LU_Decomposition[0].MatrixA)
+                          B = JSON.parse(response.data.LU_Decomposition[0].MatrixB)
                           problem(A,B,[0],e.target.value)  
                          console.log(e.target.value)
                          break
 
                          case "Jacobi_Iteration": 
                          setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                         setselectobg(response.data.keepquestion.Jacobi_Iteration)
-                         A = JSON.parse(response.data.keepquestion.Jacobi_Iteration[0].MatrixA)
-                         B = JSON.parse(response.data.keepquestion.Jacobi_Iteration[0].MatrixB)
-                         Begin = JSON.parse(response.data.keepquestion.Jacobi_Iteration[0].begin)
+                         setselectobg(response.data.Jacobi_Iteration)
+                         A = JSON.parse(response.data.Jacobi_Iteration[0].MatrixA)
+                         B = JSON.parse(response.data.Jacobi_Iteration[0].MatrixB)
+                         Begin = JSON.parse(response.data.Jacobi_Iteration[0].begin)
                          problem(A,B,Begin,e.target.value)
   
                          console.log(Begin)
@@ -765,10 +774,10 @@ const Home:React.FC =()=>{
 
                          case "Gauss_Seidal":
                           setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                          setselectobg(response.data.keepquestion.Gauss_Seidal)
-                          A = JSON.parse(response.data.keepquestion.Gauss_Seidal[0].MatrixA)
-                          B = JSON.parse(response.data.keepquestion.Gauss_Seidal[0].MatrixB)
-                          Begin = JSON.parse(response.data.keepquestion.Gauss_Seidal[0].begin)
+                          setselectobg(response.data.Gauss_Seidal)
+                          A = JSON.parse(response.data.Gauss_Seidal[0].MatrixA)
+                          B = JSON.parse(response.data.Gauss_Seidal[0].MatrixB)
+                          Begin = JSON.parse(response.data.Gauss_Seidal[0].begin)
                           problem(A,B,Begin,e.target.value)
   
                           console.log(e.target.value)  
@@ -776,10 +785,10 @@ const Home:React.FC =()=>{
 
                          case "Conjugate":
                           setselecteq(`{"MatrixA":"[[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]","MatrixB":"[12,17,14,7]","MatrixBegin":"[0,0,0,0]"}`)
-                          setselectobg(response.data.keepquestion.Conjugate)
-                          A = JSON.parse(response.data.keepquestion.Conjugate[0].MatrixA)
-                          B = JSON.parse(response.data.keepquestion.Conjugate[0].MatrixB)
-                          Begin = JSON.parse(response.data.keepquestion.Conjugate[0].begin)
+                          setselectobg(response.data.Conjugate)
+                          A = JSON.parse(response.data.Conjugate[0].MatrixA)
+                          B = JSON.parse(response.data.Conjugate[0].MatrixB)
+                          Begin = JSON.parse(response.data.Conjugate[0].begin)
                           problem(A,B,Begin,e.target.value)  
                            console.log(e.target.value)
                            break

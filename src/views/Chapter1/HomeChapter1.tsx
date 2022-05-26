@@ -33,6 +33,7 @@ const Home:React.FC =()=>{
     const [cars, setCars] = useState<setgraph[]>([])
     const [error, setError] = useState<seterror[]>([])
     const [plotgraph, setplotgraph] = useState<setplotgraph[]>([])
+    var [token,settoken] = useState(' ')
 
     const [dataTable, setdataTable] = useState([{id: 1}]);
     const [coloumnTable, setcoloumnTable] = React.useState<GridColDef[]>([])
@@ -297,18 +298,30 @@ const Home:React.FC =()=>{
     };
 
     useEffect(()=>{
-        let tokenStr = 'tle1234';
-        
-        axios.get("http://mistersigz.thddns.net:7570/Rootofeqution",{ headers: {
-            "access-token": `${tokenStr}` 
+        let tokenStr = '';
+        axios.post('http://mistersigz.thddns.net:7570/login', {
+          "email":"y-title@hotmail.com",
+          "password":"Numer2022"
+        })
+        .then(function (response) {
+          settoken(response.data.accessToken)
+          axios.get("http://mistersigz.thddns.net:7570/RootofEquation",{ headers: {
+            "Authorization": `Bearer ${response.data.accessToken}` 
           } })
           .then(response => {
-            setselectobg(response.data.keepquestion.Bisection)
-            setLatex(response.data.keepquestion.Bisection[0].eq)
-            settest({left:response.data.keepquestion.Bisection[0].left,right:response.data.keepquestion.Bisection[0].right,begin:'0'})
-            problem(response.data.keepquestion.Bisection[0].left,response.data.keepquestion.Bisection[0].right,'0',response.data.keepquestion.Bisection[0].eq,"Bisection")
+            console.log(response)
+            setselectobg(response.data.Bisection)
+            setLatex(response.data.Bisection[0].eq)
+            settest({left:response.data.Bisection[0].left,right:response.data.Bisection[0].right,begin:'0'})
+            problem(response.data.Bisection[0].left,response.data.Bisection[0].right,'0',response.data.Bisection[0].eq,"Bisection")
               // do something about response
           })
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+        
+
       },[])
 
     const gradientOffset = () => {
@@ -344,46 +357,46 @@ const Home:React.FC =()=>{
                    const sel = e.target.value;
                    setcoloumnTable([])
                    setselect(sel)
-                           let tokenStr = 'tle1234';
+                          //  let tokenStr = 'tle1234';
 
 
-                   axios.get("http://mistersigz.thddns.net:7570/Rootofeqution",{ headers: {
-                    "access-token": `${tokenStr}` 
-                  } })
+                   axios.get("http://mistersigz.thddns.net:7570/RootofEquation",{ headers: {
+                      "Authorization": `Bearer ${token}` 
+                    } })
                   .then(response => {
         
           
                       
                       switch(e.target.value){
                           case "Bisection":
-                            setselecteq(response.data.keepquestion.Bisection[0].eq)
-                            setselectobg(response.data.keepquestion.Bisection)
-                           setLatex(response.data.keepquestion.Bisection[0].eq)
-                           settest({left:response.data.keepquestion.Bisection[0].left,right:response.data.keepquestion.Bisection[0].right,begin:'0'})
-                           problem(response.data.keepquestion.Bisection[0].left,response.data.keepquestion.Bisection[0].right,'0',response.data.keepquestion.Bisection[0].eq,e.target.value)
+                            setselecteq(response.data.Bisection[0].eq)
+                            setselectobg(response.data.Bisection)
+                           setLatex(response.data.Bisection[0].eq)
+                           settest({left:response.data.Bisection[0].left,right:response.data.Bisection[0].right,begin:'0'})
+                           problem(response.data.Bisection[0].left,response.data.Bisection[0].right,'0',response.data.Bisection[0].eq,e.target.value)
                         //    const desmoslatex:string = "y="+response.data.keepquestion.Bisection[0].eq;
                         //    calculator.setExpression({ id: 'graph1', latex: desmoslatex });
                            break
                            case "FalsePosition":
-                            setselecteq(response.data.keepquestion.FalsePosition[0].eq)
-                            setselectobg(response.data.keepquestion.FalsePosition)
-                            setLatex(response.data.keepquestion.FalsePosition[0].eq)
-                            settest({left:response.data.keepquestion.FalsePosition[0].left,right:response.data.keepquestion.FalsePosition[0].right,begin:'0'})
-                            problem(response.data.keepquestion.FalsePosition[0].left,response.data.keepquestion.FalsePosition[0].right,'0',response.data.keepquestion.FalsePosition[0].eq,e.target.value)
+                            setselecteq(response.data.FalsePosition[0].eq)
+                            setselectobg(response.data.FalsePosition)
+                            setLatex(response.data.FalsePosition[0].eq)
+                            settest({left:response.data.FalsePosition[0].left,right:response.data.FalsePosition[0].right,begin:'0'})
+                            problem(response.data.FalsePosition[0].left,response.data.FalsePosition[0].right,'0',response.data.FalsePosition[0].eq,e.target.value)
 
                            break
                            case "OnePointInteration":
-                            setselecteq(response.data.keepquestion.OnePointInteration[0].eq)
-                           setLatex(response.data.keepquestion.OnePointInteration[0].eq)
-                           settest({left:'0',right:'0',begin:response.data.keepquestion.OnePointInteration[0].xbegin})
-                           problem('0','0',response.data.keepquestion.OnePointInteration[0].xbegin,response.data.keepquestion.OnePointInteration[0].eq,e.target.value)
+                            setselecteq(response.data.OnePointInteration[0].eq)
+                           setLatex(response.data.OnePointInteration[0].eq)
+                           settest({left:'0',right:'0',begin:response.data.OnePointInteration[0].xbegin})
+                           problem('0','0',response.data.OnePointInteration[0].xbegin,response.data.OnePointInteration[0].eq,e.target.value)
                             break
                            case "NewtonRaphson":
-                            setselecteq(response.data.keepquestion.NewtonRaphson[0].eq)
-                            setselectobg(response.data.keepquestion.NewtonRaphson)
-                            setLatex(response.data.keepquestion.NewtonRaphson[0].eq)
-                            settest({left:'0',right:'0',begin:response.data.keepquestion.NewtonRaphson[0].xbegin})
-                            problem('0','0',response.data.keepquestion.NewtonRaphson[0].xbegin,response.data.keepquestion.NewtonRaphson[0].eq,e.target.value)
+                            setselecteq(response.data.NewtonRaphson[0].eq)
+                            setselectobg(response.data.NewtonRaphson)
+                            setLatex(response.data.NewtonRaphson[0].eq)
+                            settest({left:'0',right:'0',begin:response.data.NewtonRaphson[0].xbegin})
+                            problem('0','0',response.data.NewtonRaphson[0].xbegin,response.data.NewtonRaphson[0].eq,e.target.value)
                            break
                            default:
                                break
