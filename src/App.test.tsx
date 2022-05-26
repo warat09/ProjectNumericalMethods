@@ -22,8 +22,6 @@ it('select chapter1',async ()=>{
      expect(screen.getByTestId("testgg").textContent).toEqual("Result: 1.8988289833068848")
   })
 
-  await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 1.8988289833068848")
-
   await waitFor(()=>{
     fireEvent.change(screen.getByTestId("select-problem") as HTMLInputElement,{
       target:{value:`{"eq":"2x^3-2x-5","left":2,"right":4}`}
