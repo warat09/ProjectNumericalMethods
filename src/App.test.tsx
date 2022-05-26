@@ -23,6 +23,7 @@ it('select chapter1',async ()=>{
   })
     await waitFor(()=>{
     expect(screen.queryByText("Result: 0")).not.toBeInTheDocument()
+    cleanup()
   })
 
 //   await waitFor(()=>{
