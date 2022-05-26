@@ -17,56 +17,53 @@ test('screen project',()=>{
 
 it('select chapter1',async ()=>{
   await render(<Chapter1 />)
-  
+
   await waitFor(()=>{
-     expect(screen.getByTestId("testgg").textContent).toEqual("Result: 0")
-  })
-    await waitFor(()=>{
-    expect(screen.queryByText("Result: 1.8988289833068848"))
-  })
+    expect(screen.queryByText("Result: 0")).not.toBeInTheDocument()
+  },{timeout:1000})
   await waitFor(()=>{
-    expect(screen.getByTestId("testgg").textContent).toEqual("Result: 1.8988289833068848")
- })
+     expect(screen.getByTestId("testgg").textContent).toEqual("Result: 1.8988289833068848")
+  },{timeout:1000})
 
   await waitFor(()=>{
     fireEvent.change(screen.getByTestId("select-problem") as HTMLInputElement,{
       target:{value:`{"eq":"2x^3-2x-5","left":2,"right":4}`}
     })
- })
+ },{timeout:1000})
  await waitFor(()=>{
    expect((screen.getByTestId("select-problem") as HTMLInputElement).value).toEqual(`{"eq":"2x^3-2x-5","left":2,"right":4}`)
- })
-//  await waitFor(()=>{
-//    expect(screen.queryByText("Result: 1.8988289833068848")).not.toBeInTheDocument()
-//  })
-
+ },{timeout:1000})
+ await waitFor(()=>{
+   expect(screen.queryByText("Result: 1.8988289833068848")).not.toBeInTheDocument()
+ },{timeout:1000})
+ await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 2.000000476837158")
 
 
    await waitFor(()=>{
       fireEvent.change(screen.getByTestId("select-option") as HTMLInputElement,{
         target:{value:"FalsePosition"}
       })
-   })
+   },{timeout:1000})
    await waitFor(()=>{
      expect((screen.getByTestId("select-option") as HTMLInputElement).value).toEqual("FalsePosition")
-   })
+   },{timeout:1000})
    await waitFor(()=>{
-     expect(screen.queryByText("Result: 0.023255813953488372"))
-   })
-//    await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 0.023255813953488372")
+     expect(screen.queryByText("Result: 2.000000476837158")).not.toBeInTheDocument()
+   },{timeout:1000})
+   await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 0.023255813953488372")
 
 
    await waitFor(()=>{
     fireEvent.change(screen.getByTestId("select-option") as HTMLInputElement,{
       target:{value:"NewtonRaphson"}
     })
- })
+ },{timeout:1000})
  await waitFor(()=>{
    expect((screen.getByTestId("select-option") as HTMLInputElement).value).toEqual("NewtonRaphson")
- })
+ },{timeout:1000})
  await waitFor(()=>{
-   expect(screen.queryByText("Result: 2.6457513110646933"))
- })
-//  await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 2.6457513110646933")
+   expect(screen.queryByText("Result: 0.023255813953488372")).not.toBeInTheDocument()
+ },{timeout:1000})
+ await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 2.6457513110646933")
 
 })
