@@ -22,8 +22,7 @@ it('select chapter1',async ()=>{
      expect(screen.getByTestId("testgg").textContent).toEqual("Result: 0")
   })
     await waitFor(()=>{
-    expect(screen.queryByText("Result: 0")).not.toBeInTheDocument()
-    cleanup()
+    expect(screen.queryByText("Result: 1.8988289833068848")).toBeInTheDocument()
   })
 
 //   await waitFor(()=>{
