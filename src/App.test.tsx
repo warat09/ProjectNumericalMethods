@@ -66,4 +66,4 @@ test('select chapter1',async ()=>{
  },{timeout:2000})
  await expect(screen.getByTestId("testgg").textContent).toEqual("Result: 2.6457513110646933")
 
-},60000)
+},40000)
