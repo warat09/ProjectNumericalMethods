@@ -46,24 +46,24 @@ jobs:
             tags: ${{ secrets.DOCKER_HUB_USERNAME }}/client:latest
 
 deploy: # job 2 identifier
-    name: Deploy
-    needs: build 
-        # the build job must succeed in order to run this job
-    runs-on: ubuntu-latest
+          name: Deploy
+          needs: build 
+              # the build job must succeed in order to run this job
+          runs-on: ubuntu-latest
 
-    steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2 
-          # downloads the uploaded build files
-      with:
-        name: production
-        path: ./build
+          steps:
+          - name: Download artifact
+            uses: actions/download-artifact@v2 
+                # downloads the uploaded build files
+            with:
+              name: production
+              path: ./build
 
-    - name: Deploy to Github pages
-      uses: warat09/ghaction-github-pages@v2
-          # action to deploy to GitHub Pages
-      with:
-        target_branch: gh-pages
-        build_dir: ./build
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          - name: Deploy to Github pages
+            uses: warat09/ghaction-github-pages@v2
+                # action to deploy to GitHub Pages
+            with:
+              target_branch: gh-pages
+              build_dir: ./build
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
