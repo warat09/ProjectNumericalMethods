@@ -59,7 +59,7 @@ const Project :React.FC = () =>{
     <article className="overflow-hidden rounded-lg shadow-lg">
 
         <a href="#/Numericalmethod/LinearAlgebra">
-            <img alt="Placeholder" className="block h-auto w-full" src="https://picsum.photos/600/400/?random"/>
+            <img alt="Placeholder" className="block h-auto w-full" src="Linear.jpg"/>
         </a>
 
         <header className="flex items-center justify-between leading-tight p-2 md:p-4">
