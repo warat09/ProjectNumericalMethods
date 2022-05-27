@@ -511,6 +511,7 @@ const Home:React.FC =()=>{
               }
               setcoloumnTable(columns)
               setdataTable(rows)
+              return x_old
             }
             const Gaiss_seidel = () => {
               // const a = [[5,2,0,0],
@@ -584,6 +585,7 @@ const Home:React.FC =()=>{
           }
           setcoloumnTable(columns)
            setdataTable(rows)
+           return x_old
             }
             const conjugate = () => {
               let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
@@ -677,10 +679,10 @@ const Home:React.FC =()=>{
                   setresult(LU())
                   break;
                 case "Jacobi_Iteration":
-                    Jacobi()
+                  setresult(Jacobi())
                     break
                 case "Gauss_Seidal":
-                    Gaiss_seidel()
+                  setresult(Gaiss_seidel())
                     break
                 case "Conjugate":
                   conjugate()
