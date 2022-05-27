@@ -1,6 +1,5 @@
 {
   "name": "ProjectNumericalMethods",
-  "homepage": "https://warat09.github.io/ProjectNumericalMethods",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

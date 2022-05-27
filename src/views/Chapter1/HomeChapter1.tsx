@@ -298,13 +298,13 @@ const Home:React.FC =()=>{
 
     useEffect(()=>{
         let tokenStr = '';
-        axios.post('http://mistersigz.thddns.net:7570/login', {
+        axios.post('https://jsonservernumerical.herokuapp.com/login', {
           "email":"y-title@hotmail.com",
           "password":"Numer2022"
         })
         .then(function (response) {
           settoken(response.data.accessToken)
-          axios.get("http://mistersigz.thddns.net:7570/RootofEquation",{ headers: {
+          axios.get("https://jsonservernumerical.herokuapp.com/RootofEquation",{ headers: {
             "Authorization": `Bearer ${response.data.accessToken}` 
           } })
           .then(response => {
@@ -359,7 +359,7 @@ const Home:React.FC =()=>{
                           //  let tokenStr = 'tle1234';
 
 
-                   axios.get("http://mistersigz.thddns.net:7570/RootofEquation",{ headers: {
+                   axios.get("https://jsonservernumerical.herokuapp.com/RootofEquation",{ headers: {
                       "Authorization": `Bearer ${token}` 
                     } })
                   .then(response => {

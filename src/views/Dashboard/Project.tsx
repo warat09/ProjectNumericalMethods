@@ -32,8 +32,8 @@ const Project :React.FC = () =>{
                 Roots of the Equation 
                 </a>
             </h1>
-            <p className="text-grey-darker text-sm">
-                11/1/19
+            <p className="text-white text-sm">
+                Midterm
             </p>
         </header>
 
@@ -62,21 +62,21 @@ const Project :React.FC = () =>{
             <img alt="Placeholder" className="block h-auto w-full" src="Linear.jpg"/>
         </a>
 
-        <header className="flex items-center justify-between leading-tight p-2 md:p-4">
+        <header className="flex items-center justify-between leading-tight p-2 md:p-4 bg-gray-800">
             <h1 className="text-lg">
-                <a className="no-underline hover:underline text-black" href="#/Numericalmethod/LinearAlgebra">
+                <a className="no-underline hover:underline text-white" href="#/Numericalmethod/LinearAlgebra">
                 LinearAlgebra
                 </a>
             </h1>
-            <p className="text-grey-darker text-sm">
-                11/1/19
+            <p className="text-white text-sm">
+            Midterm
             </p>
         </header>
 
-        <footer className="flex items-center justify-between leading-none p-2 md:p-4">
+        <footer className="flex items-center justify-between leading-none p-2 md:p-4 bg-gray-800">
             <a className="flex items-center no-underline hover:underline text-black" href="#">
                 <img alt="Placeholder" className="block rounded-full" src="Author.png"/>
-                <p className="ml-2 text-sm">
+                <p className="ml-2 text-sm text-white">
                     Numer Machine
                 </p>
             </a>
@@ -96,24 +96,24 @@ const Project :React.FC = () =>{
     <article className="overflow-hidden rounded-lg shadow-lg">
 
         <a href="#/Numericalmethod/InterpolationAndExtrapolation">
-            <img alt="Placeholder" className="block h-auto w-full" src="https://picsum.photos/600/400/?random"/>
+            <img alt="Placeholder" className="block h-auto w-full" src="interp5.png"/>
         </a>
 
-        <header className="flex items-center justify-between leading-tight p-2 md:p-4">
+        <header className="flex items-center justify-between leading-tight p-2 md:p-4 bg-gray-800">
             <h1 className="text-lg">
-                <a className="no-underline hover:underline text-black" href="#/Numericalmethod/InterpolationAndExtrapolation">
+                <a className="no-underline hover:underline text-white" href="#/Numericalmethod/InterpolationAndExtrapolation">
                 Interpolation And Extrapolation
                 </a>
             </h1>
-            <p className="text-grey-darker text-sm">
-                11/1/19
+            <p className="text-grey-darker text-sm text-white">
+                Finalterm
             </p>
         </header>
 
-        <footer className="flex items-center justify-between leading-none p-2 md:p-4">
+        <footer className="flex items-center justify-between leading-none p-2 md:p-4 bg-gray-800">
             <a className="flex items-center no-underline hover:underline text-black" href="#">
                 <img alt="Placeholder" className="block rounded-full" src="Author.png"/>
-                <p className="ml-2 text-sm">
+                <p className="ml-2 text-sm text-white">
                 Numer Machine
                 </p>
             </a>
@@ -132,24 +132,24 @@ const Project :React.FC = () =>{
     <article className="overflow-hidden rounded-lg shadow-lg">
 
         <a href="#/Numericalmethod/Least-Squares-Regression">
-            <img alt="Placeholder" className="block h-auto w-full" src="https://picsum.photos/600/400/?random"/>
+            <img alt="Placeholder" className="block h-auto w-full" src="Least-SquaresRegression.jpg"/>
         </a>
 
-        <header className="flex items-center justify-between leading-tight p-2 md:p-4">
+        <header className="flex items-center justify-between leading-tight p-2 md:p-4 bg-gray-800">
             <h1 className="text-lg">
-                <a className="no-underline hover:underline text-black" href="#/Numericalmethod/Least-Squares-Regression">
+                <a className="no-underline hover:underline text-white" href="#/Numericalmethod/Least-Squares-Regression">
                     Least-Squares Regression
                 </a>
             </h1>
-            <p className="text-grey-darker text-sm">
-                11/1/19
+            <p className="text-grey-darker text-sm text-white">
+                Finalterm
             </p>
         </header>
 
-        <footer className="flex items-center justify-between leading-none p-2 md:p-4">
+        <footer className="flex items-center justify-between leading-none p-2 md:p-4 bg-gray-800">
             <a className="flex items-center no-underline hover:underline text-black" href="#">
                 <img alt="Placeholder" className="block rounded-full" src="Author.png"/>
-                <p className="ml-2 text-sm">
+                <p className="ml-2 text-sm text-white">
                 Numer Machine
                 </p>
             </a>
@@ -168,24 +168,24 @@ const Project :React.FC = () =>{
     <article className="overflow-hidden rounded-lg shadow-lg">
 
         <a href="#/Numericalmethod/IntegrationAndDiffrentiation">
-            <img alt="Placeholder" className="block h-auto w-full" src="https://picsum.photos/600/400/?random"/>
+            <img alt="Placeholder" className="block h-auto w-full" src="IntegrationAndDiffrentiation.jpg"/>
         </a>
 
-        <header className="flex items-center justify-between leading-tight p-2 md:p-4">
+        <header className="flex items-center justify-between leading-tight p-2 md:p-4 bg-gray-800">
             <h1 className="text-lg">
-                <a className="no-underline hover:underline text-black" href="#/Numericalmethod/IntegrationAndDiffrentiation">
+                <a className="no-underline hover:underline text-white" href="#/Numericalmethod/IntegrationAndDiffrentiation">
                 Integration And Diffrentiation
                 </a>
             </h1>
-            <p className="text-grey-darker text-sm">
-                11/1/19
+            <p className="text-grey-darker text-sm text-white">
+                Finalterm
             </p>
         </header>
 
-        <footer className="flex items-center justify-between leading-none p-2 md:p-4">
+        <footer className="flex items-center justify-between leading-none p-2 md:p-4 bg-gray-800">
             <a className="flex items-center no-underline hover:underline text-black" href="#">
                 <img alt="Placeholder" className="block rounded-full" src="Author.png"/>
-                <p className="ml-2 text-sm">
+                <p className="ml-2 text-sm text-white">
                 Numer Machine
                 </p>
             </a>

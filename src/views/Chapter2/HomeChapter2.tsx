@@ -654,12 +654,12 @@ const Home:React.FC =()=>{
       useEffect(()=>{
         // console.log('123123123')
         // let tokenStr = 'tle1234';
-        axios.post('http://mistersigz.thddns.net:7570/login', {
+        axios.post('https://jsonservernumerical.herokuapp.com/login', {
           "email":"y-title@hotmail.com",
           "password":"Numer2022"
         }).then(response =>{
           settoken(response.data.accessToken)
-          axios.get("http://mistersigz.thddns.net:7570/LinearAlgebra",{ headers: {
+          axios.get("https://jsonservernumerical.herokuapp.com/LinearAlgebra",{ headers: {
             "Authorization": `Bearer ${response.data.accessToken}` 
           } })
           .then(response => {
@@ -718,7 +718,7 @@ const Home:React.FC =()=>{
                 setresult([0])
 
                 let tokenStr = 'tle1234';
-                axios.get("http://mistersigz.thddns.net:7570/LinearAlgebra",{ headers: {
+                axios.get("https://jsonservernumerical.herokuapp.com/LinearAlgebra",{ headers: {
                 "Authorization": `Bearer ${token}` 
                 } })
                 .then(response => {                    
