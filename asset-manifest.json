@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ProjectNumericalMethods/static/css/main.011224b9.css",
-    "main.js": "/ProjectNumericalMethods/static/js/main.733a0a13.js",
-    "static/js/787.ef5f2b9c.chunk.js": "/ProjectNumericalMethods/static/js/787.ef5f2b9c.chunk.js",
+    "main.css": "/ProjectNumericalMethods/static/css/main.fb9a320b.css",
+    "main.js": "/ProjectNumericalMethods/static/js/main.356bcea4.js",
+    "static/js/787.d791be9f.chunk.js": "/ProjectNumericalMethods/static/js/787.d791be9f.chunk.js",
     "index.html": "/ProjectNumericalMethods/index.html",
-    "main.011224b9.css.map": "/ProjectNumericalMethods/static/css/main.011224b9.css.map",
-    "main.733a0a13.js.map": "/ProjectNumericalMethods/static/js/main.733a0a13.js.map",
-    "787.ef5f2b9c.chunk.js.map": "/ProjectNumericalMethods/static/js/787.ef5f2b9c.chunk.js.map"
+    "main.fb9a320b.css.map": "/ProjectNumericalMethods/static/css/main.fb9a320b.css.map",
+    "main.356bcea4.js.map": "/ProjectNumericalMethods/static/js/main.356bcea4.js.map",
+    "787.d791be9f.chunk.js.map": "/ProjectNumericalMethods/static/js/787.d791be9f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.011224b9.css",
-    "static/js/main.733a0a13.js"
+    "static/css/main.fb9a320b.css",
+    "static/js/main.356bcea4.js"
   ]
 }
