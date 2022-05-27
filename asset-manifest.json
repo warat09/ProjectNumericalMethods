@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ProjectNumericalMethods/static/css/main.011224b9.css",
-    "main.js": "/ProjectNumericalMethods/static/js/main.4ebf3bd9.js",
-    "static/js/787.ef5f2b9c.chunk.js": "/ProjectNumericalMethods/static/js/787.ef5f2b9c.chunk.js",
-    "index.html": "/ProjectNumericalMethods/index.html",
-    "main.011224b9.css.map": "/ProjectNumericalMethods/static/css/main.011224b9.css.map",
-    "main.4ebf3bd9.js.map": "/ProjectNumericalMethods/static/js/main.4ebf3bd9.js.map",
-    "787.ef5f2b9c.chunk.js.map": "/ProjectNumericalMethods/static/js/787.ef5f2b9c.chunk.js.map"
+    "main.css": "/static/css/main.011224b9.css",
+    "main.js": "/static/js/main.a34b2acc.js",
+    "static/js/787.ef5f2b9c.chunk.js": "/static/js/787.ef5f2b9c.chunk.js",
+    "index.html": "/index.html",
+    "main.011224b9.css.map": "/static/css/main.011224b9.css.map",
+    "main.a34b2acc.js.map": "/static/js/main.a34b2acc.js.map",
+    "787.ef5f2b9c.chunk.js.map": "/static/js/787.ef5f2b9c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.011224b9.css",
-    "static/js/main.4ebf3bd9.js"
+    "static/js/main.a34b2acc.js"
   ]
 }
