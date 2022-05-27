@@ -49,7 +49,6 @@ const Home:React.FC =()=>{
     const columns: GridColDef[] = [
       { field: 'id', headerName: 'Iteration', width: 100 },
     ];
-
     const problem = (left:string,right:string,begin:string,eq:string,method:string) =>{
         const fx = (x:number) =>{
             let X:number = x
