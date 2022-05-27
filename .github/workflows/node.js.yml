@@ -46,7 +46,7 @@ jobs:
             tags: ${{ secrets.DOCKER_HUB_USERNAME }}/client:latest
 
  deploy:
-    name: Deploy
+    - name: Deploy
     needs: build
     runs-on: ubuntu-latest
     steps:
