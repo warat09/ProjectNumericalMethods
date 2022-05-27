@@ -194,14 +194,16 @@ const Home:React.FC =()=>{
                 X.push(X_x)
         
               }
+
               return X
             }
             const Gauss_Elimination=()=>{
               let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
               let B:Array<number> = JSON.parse(JSON.stringify(mB))
-              let LoopResult:Array<Array<Number>> = []
-              let LoopError:Array<Array<Number>> = []
+              let sizematrixB:number = B.length
+              let rows:any = [];
               let X:Array<number> = [];for(let i:number = 0;i<A.length;i++) X.push(0);
+              let n = 1
               for(let i:number=0;i<A.length;i++)
               {
                   for(let j:number=0;j<i;j++)
@@ -245,15 +247,29 @@ const Home:React.FC =()=>{
                   else{
                       B[i] = (B[i]+math.abs(temp))/A[i][i]
                   }
+                  let obg:any = {
+                    id: n
+                  }
+                  for(let i =0;i < sizematrixB;i++){
+                    obg = Object.assign(obg, { ["X" + (i + 1)]: B[i]})
+                  }
+                  rows.push(obg)
+                  n++
+
               }
-              return [B,LoopResult,LoopError]
+              for(let i = 1;i < sizematrixB+1;i++){
+                columns.push({ field: 'X'+i, headerName: 'X'+i, width: 250 })
+              }
+              setcoloumnTable(columns)
+              setdataTable(rows)
+              return B
             }
            const Gauss_Jordan=()=>{
             let A:Array<Array<number>> = JSON.parse(JSON.stringify(mA))
             let B:Array<number> = JSON.parse(JSON.stringify(mB))
-            let LoopResult:Array<Array<Number>> = []
-            let LoopError:Array<Array<Number>> = []
             let X:Array<number> = [];for(let i:number = 0;i<A.length;i++) X.push(0);
+            let row:Array<number> = []
+            let n:number = 1;
             for(let i:number=0;i<A.length;i++)
             {
                 for(let j:number=0;j<i;j++)
@@ -323,8 +339,21 @@ const Home:React.FC =()=>{
                 else{
                     B[i] = (B[i]+math.abs(temp))/A[i][i]
                 }
+                let obg:any = {
+                  id: n
+                }
+                for(let i =0;i < B.length;i++){
+                  obg = Object.assign(obg, { ["X" + (i + 1)]: B[i]})
+                }
+                rows.push(obg)
+                n++
             }
-            return [B,LoopResult,LoopError]
+            for(let i = 1;i < B.length+1;i++){
+              columns.push({ field: 'X'+i, headerName: 'X'+i, width: 250 })
+            }
+            setcoloumnTable(columns)
+            setdataTable(rows)
+            return B
 
            }
             const LU = () =>{
@@ -337,6 +366,8 @@ const Home:React.FC =()=>{
               let Upper:Array<Array<number>> = Array(a.length).fill(0).map(x=>Array(a.length).fill(0));
               let Y:Array<number> = Array(a.length).fill(0);
               let X:Array<number> = Array(a.length).fill(0);
+              let row:Array<number> = [];
+              let n:number = 1;
               for(let A:number = 0;A<a.length;A++)
               {
                   for(let B:number = A;B<a.length;B++)
@@ -388,8 +419,22 @@ const Home:React.FC =()=>{
                       }
                   }
                   X[i]=parseFloat(((Y[i]-sum)/Upper[i][i]).toPrecision(15));
+
+                  let obg:any = {
+                    id: n
+                  }
+                  for(let i =0;i < b.length;i++){
+                    obg = Object.assign(obg, { ["X" + (i + 1)]: X[i]})
+                  }
+                  rows.push(obg)
+                  n++
               }
-              return [X,Loop_Result,Loop_Error]
+              for(let i = 1;i < b.length+1;i++){
+                columns.push({ field: 'X'+i, headerName: 'X'+i, width: 250 })
+              }
+              setcoloumnTable(columns)
+              setdataTable(rows)
+              return X
             }
             const Jacobi = () =>{
               // const a = [[5,2,0,0],
@@ -622,13 +667,14 @@ const Home:React.FC =()=>{
                     console.log(Cramer())
                     break;
                 case "Gauss_Elimination":
-                  console.log(Gauss_Elimination())
+                    setresult(Gauss_Elimination())
+                    break;
                 break
                 case "Gauss_Jordan":
-                  console.log(Gauss_Jordan())
+                  setresult(Gauss_Jordan())
                   break;
                 case "LU_Decomposition":
-                  console.log(LU())
+                  setresult(LU())
                   break;
                 case "Jacobi_Iteration":
                     Jacobi()
@@ -649,7 +695,7 @@ const Home:React.FC =()=>{
         e.preventDefault();
       }
       const listItems = resultmatrix.map((number,index) =>
-        <p className="flex-1">X{index+1}:{number}</p>
+            <p className="flex-1 text-center text-xl py-2">X{index+1} : {number}</p>
       );
       useEffect(()=>{
         // console.log('123123123')
@@ -884,20 +930,13 @@ const Home:React.FC =()=>{
               />
               <h1>row: {matrixSize.rows}</h1>
               <h1>columns: {matrixSize.columns}</h1>
-              <MathJaxContext>
+              {/* <MathJaxContext>
                   <MathJax dynamic>
                       MatrixA : {showMatrix(JSON.stringify(showmatrixA))}
                       MatrixB : {showMatrix(JSON.stringify(showmatrixB))}
                     </MathJax>
-              </MathJaxContext>
-
-              {
-                selectMethod === "Cramer's_Rule" &&
-                
-                // <div>{resultmatrix.map((number)=>{
-                //   <h1>{number}</h1>
-                // })}</div>
-                <div>
+              </MathJaxContext> */}
+              <div>
                 <div className="input_matrix">
                 <div className="column_matrixA">
                 <label>MatrixA</label>
@@ -912,133 +951,40 @@ const Home:React.FC =()=>{
                     {inputMatrixB()}
                     </div>
                 </div>
+                {
+                  selectMethod == "Jacobi_Iteration" &&
+                  <div className="column_matrixB">
+                  <label>MatrixBegin</label>
+                      <div>
+                      {inputMatrixBegin()}
+                      </div>
+                  </div>
+                }
+                {
+                  selectMethod == "Gauss_Seidal" &&
+                  <div className="column_matrixB">
+                  <label>MatrixBegin</label>
+                      <div>
+                      {inputMatrixBegin()}
+                      </div>
+                  </div>
+                }
 
               </div>
               <br/>
               <input type="submit" name="submit"/>
                   {                                    
-                  listItems
-                }                                
-                </div>
-              }
-              {/* {
-                selectMethod === "Jacobi_Iteration" &&
-                    <div style={{ height: 650, width: '100%' }}>
-                    <DataGrid
-                      rows={dataTable}
-                      columns={coloumnTable}
-                      pageSize={10}
-                      rowsPerPageOptions={[5]}
-                      disableSelectionOnClick
-                    />
+                  listItems.length > 1 &&
+                  <div className="py-3">
+                    <div className="rounded-t-lg shadow-xl hover:drop-shadow-xl">
+                      <h1 className="text-center text-2xl">Answer is ....</h1>
+                      {
+                        listItems
+                      }
+                    </div>
                   </div>
-              } */}
-              {
-                selectMethod === "Jacobi_Iteration" &&
-                    <div>
-                        <div className="input_matrix">
-                        <div className="column_matrixA">
-                        <label>MatrixA</label>
-                            <div>
-                            {inputMatrixA()}
-                            </div>
-                        </div>
-
-                        <div className="column_matrixB">
-                        <label>MatrixB</label>
-                            <div>
-                            {inputMatrixB()}
-                            </div>
-                        </div>
-                        <div className="column_matrixB">
-                        <label>MatrixBegin</label>
-                            <div>
-                            {inputMatrixBegin()}
-                            </div>
-                        </div>
-
-                      </div>
-              <br/>
-              <input type="submit" name="submit"/>
-                      {coloumnTable.length > 0 &&
-                      <div style={{ height: 650, width: '100' }}>
-
-                        <DataGrid
-                        rows={dataTable}
-                        columns={coloumnTable}
-                        pageSize={10}
-                        rowsPerPageOptions={[5]}
-                        disableSelectionOnClick
-                      />
-                      </div>
-                    }
-                    </div>
-              }
-              {
-                selectMethod === "Gauss_Elimination" &&
-                <div>
-                show Gauss_Elimination
-              </div>
-
-              }
-              {
-                selectMethod === "Gauss_Seidal" &&
-
-                        <div>
-                        <div className="input_matrix">
-                        <div className="column_matrixA">
-                        <label>MatrixA</label>
-                            <div>
-                            {inputMatrixA()}
-                            </div>
-                        </div>
-
-                        <div className="column_matrixB">
-                        <label>MatrixB</label>
-                            <div>
-                            {inputMatrixB()}
-                            </div>
-                        </div>
-                        <div className="column_matrixB">
-                        <label>MatrixBegin</label>
-                            <div>
-                            {inputMatrixBegin()}
-                            </div>
-                        </div>
-
-                      </div>
-              <br/>
-              <input type="submit" name="submit"/>
-                      {coloumnTable.length > 0 &&
-                      <div style={{ height: 650, width: '100' }}>
-
-                        <DataGrid
-                        rows={dataTable}
-                        columns={coloumnTable}
-                        pageSize={10}
-                        rowsPerPageOptions={[5]}
-                        disableSelectionOnClick
-                      />
-                      </div>
-                    }
-                    </div>
-              }
-              {
-                selectMethod === "Gauss_Jordan" &&
-                <div>
-                  show Gauss_Jordan
-                </div>
-              }
-              {
-                selectMethod === "LU_Decomposition" &&
-                <div>
-                  show LU_Decomposition
-                </div>
-              }
-              {
-                selectMethod === "Conjugate" &&
-                <div>
-                      {coloumnTable.length > 0 &&
+                }
+                {coloumnTable.length > 0 &&
                       <div style={{ height: 650, width: '100%' }}>
 
                         <DataGrid
@@ -1049,9 +995,8 @@ const Home:React.FC =()=>{
                         disableSelectionOnClick
                       />
                       </div>
-                    }
-                    </div>
-              }
+                    }                                
+                </div>
               </form>
           </div>
           {/* <!-- /End replace --> */}
