@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ProjectNumericalMethods/static/css/main.fb9a320b.css",
+    "main.js": "/ProjectNumericalMethods/static/js/main.1686494c.js",
+    "static/js/787.d791be9f.chunk.js": "/ProjectNumericalMethods/static/js/787.d791be9f.chunk.js",
+    "index.html": "/ProjectNumericalMethods/index.html",
+    "main.fb9a320b.css.map": "/ProjectNumericalMethods/static/css/main.fb9a320b.css.map",
+    "main.1686494c.js.map": "/ProjectNumericalMethods/static/js/main.1686494c.js.map",
+    "787.d791be9f.chunk.js.map": "/ProjectNumericalMethods/static/js/787.d791be9f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fb9a320b.css",
+    "static/js/main.1686494c.js"
+  ]
+}
