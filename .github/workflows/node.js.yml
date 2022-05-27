@@ -1,5 +1,8 @@
 name: CI
-on: [push]
+on:
+  push:
+    branches:
+      - master
 permissions: 
   contents: write
 jobs:
@@ -44,7 +47,7 @@ jobs:
             with:
               branch: gh-pages # The branch the action should deploy to.
               folder: build # The folder the action should deploy.
-              
+
         # - name: Checkout 
         #   uses: actions/checkout@v2
           
