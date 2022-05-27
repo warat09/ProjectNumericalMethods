@@ -16,7 +16,9 @@ test('screen project',()=>{
 })
 
 test('select chapter1',async ()=>{
-  await render(<Chapter1 />)
+  await waitFor(()=>{
+    render(<Chapter1 />)
+  },{timeout:5000})
 
   await waitFor(()=>{
     expect(screen.queryByText("Result: 0")).not.toBeInTheDocument()
