@@ -66,7 +66,5 @@ jobs:
                     file: ./Dockerfile
                     push: true
                     tags: ${{ secrets.DOCKER_HUB_USERNAME }}/client:latest
-                    
-# Recommended if you intend to make multiple deployments in quick succession.
 
     
