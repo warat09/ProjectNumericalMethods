@@ -43,13 +43,13 @@
     ],
     "OnePointInteration": [
       {
-        "eq": "2-e^{\\frac{x}{4}}",
+        "eq": "(1-0.5x)/1.5",
         "left": 0,
         "right": 0,
         "xbegin": 0
       }
     ],
-    "NewtonRaphson": [
+    "NewtonRaphson": [  
       {
         "eq": "7-x^2",
         "left": 0,
@@ -158,18 +158,21 @@
   "LeastSquares": {
     "Linear_Regression": [
       {
+        "eq": "a0+(a1*x)",
         "X":"[10,15,20,30,40,50,60,70,80]",
         "Y":"[5,9,15,18,22,30,35,38,43]"
       }
     ],
     "Polynomial_Regression": [
       {
+        "equation": "a0+(a1*x)+(a2*(x^2))",
         "X":"[10,15,20,30,40,50,60,70,80]",
         "Y":"[5,9,15,18,22,30,35,38,43]"
       }
     ],
     "Multiple_Linear_Regression": [
       {
+        "eq": "a0+(a1*x1)+(a2*x2)+(a3*x3)",
         "X1": "[1,0,2,3,4,2,1]",
         "X2": "[0,1,4,2,1,3,6]",
         "X3": "[1,3,1,2,5,3,4]",
