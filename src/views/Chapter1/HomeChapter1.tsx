@@ -7,6 +7,10 @@ import axios from "axios";
 import * as mathjs from "mathjs";
 import { index } from "mathjs";
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import InputLabel from "@mui/material/InputLabel";
+import { Box, FormControl } from "@mui/material";
 
 
 addStyles()
@@ -44,7 +48,7 @@ const Home:React.FC =()=>{
     const datasetplotgraph :setplotgraph[]= []
 
     const [selectobg,setselectobg] = useState([])
-    const [selecteq,setselecteq] = useState("")
+    const [selecteq,setselecteq] = useState(`{"eq":"x^4-13","left":1.5,"right":2}`)
 
     const columns: GridColDef[] = [
       { field: 'id', headerName: 'Iteration', width: 100 },
@@ -352,7 +356,18 @@ const Home:React.FC =()=>{
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {/* <!-- Replace with your content --> */}
           <div className="px-4 py-6 sm:px-0">
-          <select data-testid="select-option" onChange={(e)=>{
+          <Box sx={{ m: 1, minWidth: 500 }}>
+            <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-method">Method</InputLabel>
+            <Select 
+              labelId="demo-simple-select-method"
+              id="demo-simple-select"           
+              label="Method"
+              value={selectMethod}
+              inputProps={{
+                "data-testid":"select-option" 
+              }} 
+              onChange={(e)=>{
                    const sel = e.target.value;
                    setcoloumnTable([])
                    setselect(sel)
@@ -408,26 +423,40 @@ const Home:React.FC =()=>{
                   })
                    
                }} className="border-b-2 m-0 border-zinc-700	">
-                   <option value="Bisection" >BisectionMethod</option>
-                   <option value="FalsePosition">FalsePositionMethod</option>
-                   <option value="OnePointInteration" >OnePointInteration</option>
-                   <option value="NewtonRaphson" >NewtonRaphson</option>
-               </select>
-
-               <select onChange={(e)=>{
+                   <MenuItem value="Bisection" >BisectionMethod</MenuItem>
+                   <MenuItem value="FalsePosition">FalsePositionMethod</MenuItem>
+                   <MenuItem value="OnePointInteration" >OnePointInteration</MenuItem>
+                   <MenuItem value="NewtonRaphson" >NewtonRaphson</MenuItem>
+              </Select>
+              </FormControl>
+              </Box>
+            <Box sx={{ m: 1, minWidth: 500 }}>
+            <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Problem</InputLabel>
+            <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"           
+            label="problem"
+            value={selecteq}
+            inputProps={{
+              "data-testid":"select-problem" 
+            }}
+            onChange={(e)=>{
                    setselecteq(e.target.value)
                    let B = JSON.parse(e.target.value)
                    problem(B.left,B.right,'0',B.eq,selectMethod)
                    setLatex(B.eq)
                     settest({left:B.left,right:B.right,begin:'0'})
 
-               }} data-testid="select-problem" value={selecteq}>
+               }}>
                   {
                   selectobg.map(({ eq, left,right }) => (
-            <option value={'{"eq":'+`"${eq}"`+','+'"left":'+left+','+'"right":'+right+'}'}>{eq}</option>
+            <MenuItem value={'{"eq":'+`"${eq}"`+','+'"left":'+left+','+'"right":'+right+'}'}>{eq}</MenuItem>
                     ))
                     }
-               </select>
+              </Select>
+              </FormControl>
+              </Box>
 
                <form onSubmit={handleSubmit}>
                 <label>ใส่สมการ</label>

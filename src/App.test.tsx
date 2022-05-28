@@ -2,7 +2,6 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import App from './App';
 import Project from './views/Dashboard/Project';
 import Chapter1 from './views/Chapter1';
-import userEvent from '@testing-library/user-event'
 afterEach(cleanup);
 
 

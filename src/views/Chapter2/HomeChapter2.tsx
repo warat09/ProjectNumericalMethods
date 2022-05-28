@@ -760,7 +760,15 @@ const Home:React.FC =()=>{
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {/* <!-- Replace with your content --> */}
           <div className="px-4 py-6 sm:px-0">
-            <select onChange={(e)=>{
+          <Box sx={{ m: 1, minWidth: 500 }}>
+            <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-method">Method</InputLabel>
+            <Select 
+            labelId="demo-simple-select-method"
+            id="demo-simple-select"           
+            label="Method"
+            value={selectMethod}
+            onChange={(e)=>{
                 setselectMethod(e.target.value)
                 setcoloumnTable([])
                 setresult([0])
@@ -852,14 +860,17 @@ const Home:React.FC =()=>{
                     console.error(err)
                 })
             }}>
-                <option value="Cramer's_Rule">Cramer's_Rule</option>
-                <option value="Gauss_Elimination">Gauss_Elimination</option>
-                <option value="Gauss_Jordan">Gauss_Jordan</option>
-                <option value="LU_Decomposition">LU Decomposition</option>
-                <option value="Jacobi_Iteration">Jacobi_Iteration</option>
-                <option value="Gauss_Seidal">Gauss_Seidal</option>
-                <option value="Conjugate">Conjugate</option>
-            </select>
+                <MenuItem value="Cramer's_Rule">Cramer's_Rule</MenuItem>
+                <MenuItem value="Gauss_Elimination">Gauss_Elimination</MenuItem>
+                <MenuItem value="Gauss_Jordan">Gauss_Jordan</MenuItem>
+                <MenuItem value="LU_Decomposition">LU Decomposition</MenuItem>
+                <MenuItem value="Jacobi_Iteration">Jacobi_Iteration</MenuItem>
+                <MenuItem value="Gauss_Seidal">Gauss_Seidal</MenuItem>
+                <MenuItem value="Conjugate">Conjugate</MenuItem>
+            </Select>
+              </FormControl>
+              </Box>
+
             <Box sx={{ m: 1, minWidth: 500 }}>
             <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">problem</InputLabel>
