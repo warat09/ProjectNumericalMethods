@@ -28,11 +28,11 @@ test('select chapter1',async ()=>{
 
   await waitFor(()=>{
     fireEvent.change(screen.getByTestId("select-problem") as HTMLInputElement,{
-      target:{value:`{"eq":"2x^3-2x-5","left":2,"right":4}`}
+      target:{value:`{"eq":"2x^3-2x-5","left":2,"right":4,"xbegin":0}`}
     })
  },{timeout:5000})
  await waitFor(()=>{
-   expect((screen.getByTestId("select-problem") as HTMLInputElement).value).toEqual(`{"eq":"2x^3-2x-5","left":2,"right":4}`)
+   expect((screen.getByTestId("select-problem") as HTMLInputElement).value).toEqual(`{"eq":"2x^3-2x-5","left":2,"right":4,"xbegin":0}`)
  },{timeout:5000})
  await waitFor(()=>{
    expect(screen.queryByText("Result: 1.8988289833068848")).not.toBeInTheDocument()

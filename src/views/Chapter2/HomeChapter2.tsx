@@ -859,7 +859,7 @@ const Home:React.FC =()=>{
                 .catch(err => {
                     console.error(err)
                 })
-            }}>
+            }} className="border-b-2 m-0 border-zinc-300">
                 <MenuItem value="Cramer's_Rule">Cramer's_Rule</MenuItem>
                 <MenuItem value="Gauss_Elimination">Gauss_Elimination</MenuItem>
                 <MenuItem value="Gauss_Jordan">Gauss_Jordan</MenuItem>
@@ -897,7 +897,7 @@ const Home:React.FC =()=>{
                    console.log(e.target.value)
                   //  console.log(MatrixB)
 
-               }}>
+               }} className="border-b-2 m-0 border-zinc-300">
                   {
                   selectobg.map(({ MatrixA,MatrixB,begin}) => (
                     <MenuItem  value={'{"MatrixA":'+`"${MatrixA}"`+','+'"MatrixB":'+`"${MatrixB}"`+','+'"MatrixBegin":'+`"${begin}"`+'}'}>

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Link, Route, Routes,Router} from "react-router-dom";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
+
 
 import { addStyles, EditableMathField,StaticMathField} from "react-mathquill"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,AreaChart,Area, Brush,ReferenceLine } from 'recharts';
@@ -48,7 +50,7 @@ const Home:React.FC =()=>{
     const datasetplotgraph :setplotgraph[]= []
 
     const [selectobg,setselectobg] = useState([])
-    const [selecteq,setselecteq] = useState(`{"eq":"x^4-13","left":1.5,"right":2}`)
+    const [selecteq,setselecteq] = useState(`{"eq":"x^4-13","left":1.5,"right":2,"xbegin":0}`)
 
     const columns: GridColDef[] = [
       { field: 'id', headerName: 'Iteration', width: 100 },
@@ -196,6 +198,8 @@ const Home:React.FC =()=>{
             let X2:number = fx(x_old)
             let x_old_old:number  = 0
             let error:number = Math.abs((X2-x_old)/X2)
+            let rows:any = []
+            let n:number = 1
 
             while (error > 0.000001 && error != Infinity){
                 x_old_old = x_old
@@ -210,12 +214,23 @@ const Home:React.FC =()=>{
                     name: dataserror.length,
                     Error: error
                   }
+                  let obg:any = {
+                    id: n
+                  }
+                    obg = Object.assign(obg, { ["X2"]: X2,["Error"]:error})
+                    rows.push(obg)
 
                   dataserror.push(newerror)
                   datas.push(newCar)
+                  n++
             }
+            
+            columns.push({ field: 'X2', headerName: 'X2', width: 300 },
+            { field: 'Error', headerName: 'Error', width: 300 })
             setCars(datas)
             setError(dataserror)
+            setcoloumnTable(columns)
+            setdataTable(rows)
 
             return X2
         }
@@ -316,7 +331,7 @@ const Home:React.FC =()=>{
             setselectobg(response.data.Bisection)
             setLatex(response.data.Bisection[0].eq)
             settest({left:response.data.Bisection[0].left,right:response.data.Bisection[0].right,begin:'0'})
-            problem(response.data.Bisection[0].left,response.data.Bisection[0].right,'0',response.data.Bisection[0].eq,"Bisection")
+            problem(response.data.Bisection[0].left,response.data.Bisection[0].right,response.data.Bisection[0].xbegin,response.data.Bisection[0].eq,"Bisection")
               // do something about response
           })
         })
@@ -377,40 +392,39 @@ const Home:React.FC =()=>{
                    axios.get("https://jsonservernumerical.herokuapp.com/RootofEquation",{ headers: {
                       "Authorization": `Bearer ${token}` 
                     } })
-                  .then(response => {
-        
-          
-                      
+                  .then(response => {              
                       switch(e.target.value){
                           case "Bisection":
-                            setselecteq(response.data.Bisection[0].eq)
+                            setselecteq(JSON.stringify(response.data.Bisection[0]))
                             setselectobg(response.data.Bisection)
                            setLatex(response.data.Bisection[0].eq)
-                           settest({left:response.data.Bisection[0].left,right:response.data.Bisection[0].right,begin:'0'})
-                           problem(response.data.Bisection[0].left,response.data.Bisection[0].right,'0',response.data.Bisection[0].eq,e.target.value)
+                           settest({left:response.data.Bisection[0].left,right:response.data.Bisection[0].right,begin:response.data.Bisection[0].xbegin})
+                           problem(response.data.Bisection[0].left,response.data.Bisection[0].right,response.data.Bisection[0].xbegin,response.data.Bisection[0].eq,e.target.value)
                         //    const desmoslatex:string = "y="+response.data.keepquestion.Bisection[0].eq;
                         //    calculator.setExpression({ id: 'graph1', latex: desmoslatex });
                            break
                            case "FalsePosition":
-                            setselecteq(response.data.FalsePosition[0].eq)
+                            setselecteq(JSON.stringify(response.data.FalsePosition[0]))
                             setselectobg(response.data.FalsePosition)
                             setLatex(response.data.FalsePosition[0].eq)
-                            settest({left:response.data.FalsePosition[0].left,right:response.data.FalsePosition[0].right,begin:'0'})
-                            problem(response.data.FalsePosition[0].left,response.data.FalsePosition[0].right,'0',response.data.FalsePosition[0].eq,e.target.value)
+                            settest({left:response.data.FalsePosition[0].left,right:response.data.FalsePosition[0].right,begin:response.data.FalsePosition[0].xbegin})
+                            problem(response.data.FalsePosition[0].left,response.data.FalsePosition[0].right,response.data.FalsePosition[0].xbegin,response.data.FalsePosition[0].eq,e.target.value)
 
                            break
                            case "OnePointInteration":
-                            setselecteq(response.data.OnePointInteration[0].eq)
+                            setselecteq(JSON.stringify(response.data.OnePointInteration[0]))
+                            console.log(JSON.stringify(response.data.OnePointInteration[0]))
+                            setselectobg(response.data.OnePointInteration)
                            setLatex(response.data.OnePointInteration[0].eq)
-                           settest({left:'0',right:'0',begin:response.data.OnePointInteration[0].xbegin})
-                           problem('0','0',response.data.OnePointInteration[0].xbegin,response.data.OnePointInteration[0].eq,e.target.value)
+                           settest({left:response.data.OnePointInteration[0].left,right:response.data.OnePointInteration[0].right,begin:response.data.OnePointInteration[0].xbegin})
+                           problem(response.data.OnePointInteration[0].left,response.data.OnePointInteration[0].right,response.data.OnePointInteration[0].xbegin,response.data.OnePointInteration[0].eq,e.target.value)
                             break
                            case "NewtonRaphson":
-                            setselecteq(response.data.NewtonRaphson[0].eq)
+                            setselecteq(JSON.stringify(response.data.NewtonRaphson[0]))
                             setselectobg(response.data.NewtonRaphson)
                             setLatex(response.data.NewtonRaphson[0].eq)
-                            settest({left:'0',right:'0',begin:response.data.NewtonRaphson[0].xbegin})
-                            problem('0','0',response.data.NewtonRaphson[0].xbegin,response.data.NewtonRaphson[0].eq,e.target.value)
+                            settest({left:response.data.NewtonRaphson[0].left,right:response.data.NewtonRaphson[0].right,begin:response.data.NewtonRaphson[0].xbegin})
+                            problem(response.data.NewtonRaphson[0].left,response.data.NewtonRaphson[0].xbeginright,response.data.NewtonRaphson[0].xbegin,response.data.NewtonRaphson[0].eq,e.target.value)
                            break
                            default:
                                break
@@ -422,7 +436,7 @@ const Home:React.FC =()=>{
                       console.error(err)
                   })
                    
-               }} className="border-b-2 m-0 border-zinc-700	">
+               }} className="border-b-2 m-0 border-zinc-300">
                    <MenuItem value="Bisection" >BisectionMethod</MenuItem>
                    <MenuItem value="FalsePosition">FalsePositionMethod</MenuItem>
                    <MenuItem value="OnePointInteration" >OnePointInteration</MenuItem>
@@ -442,65 +456,128 @@ const Home:React.FC =()=>{
               "data-testid":"select-problem" 
             }}
             onChange={(e)=>{
+                  console.log(e.target.value)
                    setselecteq(e.target.value)
                    let B = JSON.parse(e.target.value)
-                   problem(B.left,B.right,'0',B.eq,selectMethod)
+                   problem(B.left,B.right,B.xbegin,B.eq,selectMethod)
                    setLatex(B.eq)
-                    settest({left:B.left,right:B.right,begin:'0'})
+                    settest({left:B.left,right:B.right,begin:B.xbegin})
 
-               }}>
+               }} className="border-b-2 m-0 border-zinc-300">
                   {
-                  selectobg.map(({ eq, left,right }) => (
-            <MenuItem value={'{"eq":'+`"${eq}"`+','+'"left":'+left+','+'"right":'+right+'}'}>{eq}</MenuItem>
+                  selectobg.map(({ eq, left,right,xbegin }) => (
+            <MenuItem value={'{"eq":'+`"${eq}"`+','+'"left":'+left+','+'"right":'+right+','+'"xbegin":'+xbegin+'}'}>
+                <MathJaxContext>
+              <MathJax>{`\\(${eq}\\)`}</MathJax>
+            </MathJaxContext>
+            </MenuItem>
                     ))
-                    }
+                  }
+
               </Select>
               </FormControl>
               </Box>
 
                <form onSubmit={handleSubmit}>
-                <label>ใส่สมการ</label>
-                <EditableMathField
-                    style={{ display: "flex", color: "red", flexDirection: "column",width: "100px"}}
+
+                   <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                      ใส่สมการ
+                    </label>
+                    <EditableMathField
+                    style={{ display: "flex", color: "black", flexDirection: "column",width: "270px",height:"50px",border: "1px solid gray",borderRadius:"5px",padding:"6px 0px 0px 15px",fontSize:"20px"}}
                     latex={latex}
                     data-testid="eq"
                     onChange={(mathField) => {
                         setLatex(mathField.latex())
                     }}
                 />
+                  </div>
                  {
-                    selectMethod === "Bisection" &&  
-                    <div>
-                        <input value={test.left}  onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"} data-testid="bileft"/>
-                         <input value={test.right} onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"} data-testid="biright"/>
+                    selectMethod === "Bisection" &&
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                      <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        ขอบเขตซ้าย                        
+                        </label>
+                        <input value={test.left}  onChange={inputsHandler} className="appearance-none block w-full bg-white-200 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-last-name" name="left" placeholder={"ขอบเขตซ้าย"} data-testid="bileft"/>
+                      </div>
+                      <div className="w-full md:w-1/2 px-3">
+                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                          ขอบเขตขวา
+                        </label>
+                        <input value={test.right} className="appearance-none block w-full bg-white-200 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"} data-testid="biright"/>
+                        <button className="shadow bg-gray-800 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">submit</button>
+
+                      </div>
+                      </div>
                     </div>
+
                 }
                 {
                     selectMethod === "FalsePosition" &&  
-                    <div>
-                        <input value={test.left}  onChange={inputsHandler} name="left" placeholder={"ขอบเขตซ้าย"} data-testid="faileft"/>
-                         <input value={test.right} onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"} data-testid="failright"/>
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                      <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        ขอบเขตซ้าย                        
+                        </label>
+                        <input value={test.left}  onChange={inputsHandler} className="appearance-none block w-full bg-white-200 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-last-name" name="left" placeholder={"ขอบเขตซ้าย"} data-testid="failleft"/>
+                      </div>
+                      <div className="w-full md:w-1/2 px-3">
+                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                          ขอบเขตขวา
+                        </label>
+                        <input value={test.right} className="appearance-none block w-full bg-white-200 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" onChange={inputsHandler} name="right" placeholder={"ขอบเขตขวา"} data-testid="failright"/>
+                        <button className="shadow bg-gray-800 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">submit</button>
+
+                      </div>
+                      </div>
                     </div>
                 }
                 {
                     selectMethod === "OnePointInteration" &&
-                    <div>
-                        <input value={test.begin}  onChange={inputsHandler} name="begin" placeholder={"ค่าเริ่มต้น"}/>
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                      <div className="w-full md:w-1/2 px-3">
+                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        ค่าเริ่มต้น
+                        </label>
+                        <input value={test.begin} className="appearance-none block w-full bg-white-200 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" onChange={inputsHandler} name="begin" placeholder={"ค่าเริ่มต้น"}/>
+                        <button className="shadow bg-gray-800 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">submit</button>
+
+                      </div>
+                      </div>
                     </div>
                 }
                 {
                     selectMethod === "NewtonRaphson" &&
-                    <div>
-                        <input value={test.begin}  onChange={inputsHandler} name="begin" placeholder={"ค่าเริ่มต้น"}/>
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                      <div className="w-full md:w-1/2 px-3">
+                        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                        ค่าเริ่มต้น
+                        </label>
+                        <input value={test.begin} className="appearance-none block w-full bg-white-200 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" onChange={inputsHandler} name="begin" placeholder={"ค่าเริ่มต้น"}/>
+                        <button className="shadow bg-gray-800 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">submit</button>
+
+                      </div>
+                      </div>
                     </div>
                 }
-                <button type="submit">submit</button>
                 {/* <p>{latex.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*$2').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*$2').replace(/x/g,'-10').replace(/(e)([-+]?[0-9]*\.?[0-9]+)/g, '$1*$2').replace(/([-][0-9]*\.?[0-9]+)\^([-+]?[0-9]*\.?[0-9]+)/,'($1)^$2').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan')}</p> */}
                 {/* .replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/{\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}}/,'($1/$2)') */}
                 {/* <p>{latex.replace(/x/g,'-3').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/\\sin/,'sin').replace(/\\cos/,'cos').replace(/\\tan/,'tan').replace(/\\frac{(.+)}{(.+)}/,'$1/$2').replace(/\\frac3)(2)/).replace(/{/g,'(').replace(/}/g,')').replace(/\\left\(/g,'(').replace(/\\right\)/g,')')}</p> */}
-                <p>{latex.replace(/[^\\]*\\frac{(.+)}{(.+)}$/g,'$1/$2')}</p>
+                {/* <p>{latex}</p>
+                <p>{latex.replace(/([-+]?[0-9]*\.?[0-9]+)(x)/g, '$1*x').replace(/([-+]?[0-9]*\.?[0-9]+)(e)/g, '$1*e').replace(/\\frac{([-+]?[0-9]*\.?[0-9]+)}{([-+]?[0-9]*\.?[0-9]+)}/,'$1/$2').replace(/\\sqrt{([-+]?[0-9]*\.?[0-9]+)}/,'sqrt($1)').replace(/{/g,'(').replace(/}/g,')')}</p> */}
 
-                <h2 data-testid="testgg">Result: {res}</h2>
+                <div className="py-3">
+                    <div className="rounded-t-lg shadow-xl hover:drop-shadow-xl">
+                      <h1 className="text-center text-2xl">Answer is ....</h1>
+                      <h2 className="flex-1 text-center text-xl py-2" data-testid="testgg">Result: {res}</h2>
+                    </div>
+                  </div>
                 <h2 style={{marginLeft: "450px"}}>กราฟจากสมการ</h2>
 
                 <LineChart width={1000} height={600} data={plotgraph} 
